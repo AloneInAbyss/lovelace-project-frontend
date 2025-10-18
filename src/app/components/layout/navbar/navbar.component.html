@@ -19,13 +19,18 @@
 
       <nav class="flex items-center justify-between gap-4 grow">
         <div class="flex items-center gap-2 ml-4">
-          <p-button routerLink="/" label="Início" variant="text" severity="primary" [rounded]="true" />
-          <p-button routerLink="/wishlist" label="Lista de Desejos" variant="text" severity="secondary" [rounded]="true" />
+          <p-button routerLink="/" label="Início" variant="text" [severity]="getButtonSeverity('/')" [rounded]="true" />
+          <p-button routerLink="/wishlist" label="Lista de Desejos" variant="text" [severity]="getButtonSeverity('/wishlist')" [rounded]="true" />
         </div>
 
         <div class="flex items-center gap-2 ml-4">
-          <p-button label="Entrar" icon="pi pi-user"></p-button>
-          <p-button label="Registrar" severity="secondary"></p-button>
+          @if (isLoggedIn) {
+            <p-button routerLink="/profile" label="Perfil" icon="pi pi-user" [rounded]="true"></p-button>
+            <p-button label="Sair" severity="secondary" (click)="signOut()"></p-button>
+          } @else {
+            <p-button routerLink="/login" label="Entrar" icon="pi pi-user"></p-button>
+            <p-button routerLink="/register" label="Registrar" severity="secondary"></p-button>
+          }
         </div>
       </nav>
     </div>
