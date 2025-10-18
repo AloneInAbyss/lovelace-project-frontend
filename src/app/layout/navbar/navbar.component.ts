@@ -1,15 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddon } from 'primeng/inputgroupaddon';
+import { InputTextModule } from 'primeng/inputtext';
 import { Menu } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
-import { tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -22,7 +21,7 @@ import { AuthService } from '../../services/auth.service';
     InputTextModule,
     InputGroupModule,
     InputGroupAddon,
-    Menu
+    Menu,
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
@@ -35,7 +34,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   items: MenuItem[] | undefined;
 
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(
+    private router: Router,
+    private auth: AuthService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
     // initialize current url (strip query/hash)
@@ -84,7 +87,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private signOut(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+    try {
+      this.auth.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+      });
+    }
   }
 }
