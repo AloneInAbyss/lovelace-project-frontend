@@ -7,6 +7,8 @@ import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddon } from 'primeng/inputgroupaddon';
+import { Menu } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 import { tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 
@@ -20,6 +22,7 @@ import { AuthService } from '../../services/auth.service';
     InputTextModule,
     InputGroupModule,
     InputGroupAddon,
+    Menu
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
@@ -29,6 +32,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false; // driven by AuthService
 
   private sub?: Subscription;
+
+  items: MenuItem[] | undefined;
 
   constructor(private router: Router, private auth: AuthService) {}
 
@@ -45,6 +50,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     // subscribe to auth state
     this.auth.isLoggedIn$.pipe(tap((v) => (this.isLoggedIn = v))).subscribe();
+
+    // setup menu items
+    this.items = [
+      {
+        label: 'Configurações',
+        icon: 'pi pi-cog',
+        routerLink: '/profile',
+      },
+      {
+        label: 'Sair',
+        icon: 'pi pi-sign-out',
+        command: () => {
+          this.signOut();
+        },
+      },
+    ];
   }
 
   ngOnDestroy(): void {
@@ -62,7 +83,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return (this.currentUrl.startsWith(path) ? 'primary' : 'secondary') as ButtonSeverity;
   }
 
-  signOut(): void {
+  private signOut(): void {
     this.auth.logout();
     this.router.navigate(['/']);
   }

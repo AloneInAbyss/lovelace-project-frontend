@@ -25,8 +25,8 @@
 
         <div class="flex items-center gap-2 ml-4">
           @if (isLoggedIn) {
-            <p-button routerLink="/profile" label="Perfil" icon="pi pi-user" [rounded]="true"></p-button>
-            <p-button label="Sair" severity="secondary" (click)="signOut()"></p-button>
+            <p-menu #menu [model]="items" [popup]="true" />
+            <p-button (click)="menu.toggle($event)" label="Perfil" icon="pi pi-user"></p-button>
           } @else {
             <p-button routerLink="/login" label="Entrar" icon="pi pi-user"></p-button>
             <p-button routerLink="/register" label="Registrar" severity="secondary"></p-button>
