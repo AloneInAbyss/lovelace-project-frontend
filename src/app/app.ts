@@ -12,8 +12,6 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
   styleUrl: './app.css'
 })
 export class App implements OnInit, OnDestroy {
-  protected readonly title = signal('lovelace-project-frontend');
-
   showNavbar = true;
   private sub?: Subscription;
 
@@ -36,6 +34,6 @@ export class App implements OnInit, OnDestroy {
 
   private isAuthRoute(url: string) {
     const path = (url || '/').split('?')[0].split('#')[0];
-    return path === '/login' || path === '/register';
+    return path === '/login' || path === '/register' || path === '/forgot-password';
   }
 }

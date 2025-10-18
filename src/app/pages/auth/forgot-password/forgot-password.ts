@@ -7,11 +7,10 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../services/auth.service';
-import { Header } from "../header/header";
+import { Header } from '../header/header';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
+  selector: 'app-forgot-password',
   imports: [
     CommonModule,
     FormsModule,
@@ -20,19 +19,18 @@ import { Header } from "../header/header";
     InputGroupModule,
     InputGroupAddonModule,
     InputTextModule,
-    Header
-],
-  templateUrl: './login.page.html',
+    Header,
+  ],
+  standalone: true,
+  templateUrl: './forgot-password.html',
 })
-export class LoginPage {
+export class ForgotPassword {
   identity = '';
-  password = '';
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  simulateLogin() {
-    // TODO: In a real app, call auth API. Here we simulate success.
-    this.auth.login();
-    this.router.navigate(['/']);
+  simulateForgotPassword() {
+    // TODO: Implement forgot password logic
+    alert(`Forgot password requested for: ${this.identity}`);
   }
 }
