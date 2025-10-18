@@ -72,9 +72,10 @@ export class RegisterPage {
       );
 
       this.messageService.add({
-        severity: 'success',
+        severity: 'info',
         summary: 'Registro',
-        detail: `Registro realizado com sucesso.`,
+        detail: `Acesse o link de verificação enviado para seu email para ativar sua conta.`,
+        life: 15000,
       });
 
       this.router.navigate(['/login']);
