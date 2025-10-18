@@ -7,6 +7,8 @@ import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddon } from 'primeng/inputgroupaddon';
+import { AuthService } from '../../../services/auth.service';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
@@ -24,11 +26,11 @@ import { InputGroupAddon } from 'primeng/inputgroupaddon';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   currentUrl = '/';
-  isLoggedIn = false; // placeholder: real auth should set this
+  isLoggedIn = false; // driven by AuthService
 
   private sub?: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {
     // initialize current url (strip query/hash)
@@ -40,6 +42,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .subscribe((e) => {
         this.currentUrl = this.stripUrl(e.urlAfterRedirects || e.url);
       });
+
+    // subscribe to auth state
+    this.auth.isLoggedIn$.pipe(tap((v) => (this.isLoggedIn = v))).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -58,8 +63,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   signOut(): void {
-    // placeholder sign out behavior. Replace with real auth logic.
-    this.isLoggedIn = false;
+    this.auth.logout();
     this.router.navigate(['/']);
   }
 }

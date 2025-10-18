@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -10,9 +12,16 @@ import { ButtonModule } from 'primeng/button';
   template: `
     <main class="p-4 max-w-md mx-auto">
       <h1 class="text-2xl font-semibold mb-4">Registrar</h1>
-      <p class="mb-2">(This is a placeholder registration page.)</p>
-      <p-button label="Simulate Register"></p-button>
+  <p class="mb-2">(This is a placeholder registration page.)</p>
+  <p-button label="Simulate Register" (click)="simulateRegister()"></p-button>
     </main>
   `,
 })
-export class RegisterPage {}
+export class RegisterPage {
+  constructor(private auth: AuthService, private router: Router) {}
+
+  simulateRegister() {
+    this.auth.login();
+    this.router.navigate(['/']);
+  }
+}
