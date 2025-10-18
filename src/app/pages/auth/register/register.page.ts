@@ -1,30 +1,49 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../services/auth.service';
-import { Router, RouterModule } from '@angular/router';
-import { Header } from "../header/header";
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputGroupModule, InputGroupAddonModule, InputTextModule, Header, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    Header,
+    RouterModule,
+  ],
   templateUrl: './register.page.html',
 })
 export class RegisterPage {
   registerForm: FormGroup;
+  loading = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
-    this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(24)]],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
-      passwordConfirm: ['', [Validators.required]],
-    }, { validators: this.passwordsMatchValidator });
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private messageService: MessageService
+  ) {
+    this.registerForm = this.fb.group(
+      {
+        email: ['', [Validators.required, Validators.email]],
+        username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(24)]],
+        password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
+        passwordConfirm: ['', [Validators.required]],
+      },
+      { validators: this.passwordsMatchValidator }
+    );
   }
 
   get f() {
@@ -37,14 +56,38 @@ export class RegisterPage {
     return pw && pwc && pw === pwc ? null : { passwordMismatch: true };
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    // Simulate registration success and log the user in for now.
-    this.auth.register();
-    this.router.navigate(['/login']);
+    this.loading = true;
+
+    try {
+      await this.auth.register(
+        this.f['email'].value,
+        this.f['username'].value,
+        this.f['password'].value
+      );
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Registro',
+        detail: `Registro realizado com sucesso.`,
+      });
+
+      this.router.navigate(['/login']);
+    } catch (error) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+      });
+
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
+    }
   }
 }
