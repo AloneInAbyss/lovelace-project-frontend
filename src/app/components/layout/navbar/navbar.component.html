@@ -1,0 +1,27 @@
+<header class="bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      <div class="flex items-center gap-4">
+        <a routerLink="/" class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded flex items-center justify-center bg-black text-white font-bold">lp</div>
+          <span class="hidden sm:inline font-semibold text-lg">Lovelace</span>
+        </a>
+
+        <div class="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-1 w-96">
+          <mat-icon>search</mat-icon>
+          <input placeholder="Search for a game..." class="bg-transparent ml-2 outline-none w-full" />
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-4">
+        <a routerLink="/" class="text-sm text-gray-700">Home</a>
+        <a routerLink="/wishlist" class="text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded">Wishlist</a>
+
+        <div class="flex items-center gap-2 ml-4">
+          <button mat-button color="primary" class="hidden sm:inline px-4 py-1 border rounded">Sign in</button>
+          <button mat-raised-button color="primary" class="px-4 py-1">Register</button>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
