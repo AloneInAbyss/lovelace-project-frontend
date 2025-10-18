@@ -7,8 +7,8 @@ import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddon } from 'primeng/inputgroupaddon';
-import { AuthService } from '../../../services/auth.service';
 import { tap } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
