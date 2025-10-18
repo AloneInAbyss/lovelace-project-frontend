@@ -1,5 +1,7 @@
-<app-navbar></app-navbar>
+@if (showNavbar) {
+  <app-navbar></app-navbar>
+}
 
 <main class="pt-4">
-	<router-outlet />
+  <router-outlet />
 </main>

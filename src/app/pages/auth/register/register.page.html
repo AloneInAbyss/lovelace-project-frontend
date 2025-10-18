@@ -1,0 +1,69 @@
+<app-header>
+  <form class="space-y-6" (ngSubmit)="simulateRegister()">
+    <p-inputgroup>
+      <p-inputgroup-addon>
+        <i class="pi pi-envelope"></i>
+      </p-inputgroup-addon>
+      <input
+        pInputText
+        [(ngModel)]="email"
+        name="email"
+        type="email"
+        required
+        placeholder="Email"
+      />
+    </p-inputgroup>
+
+    <p-inputgroup>
+      <p-inputgroup-addon>
+        <i class="pi pi-user"></i>
+      </p-inputgroup-addon>
+      <input
+        pInputText
+        [(ngModel)]="username"
+        name="username"
+        required
+        placeholder="Nome de usuário"
+      />
+    </p-inputgroup>
+
+    <p-inputgroup>
+      <p-inputgroup-addon>
+        <i class="pi pi-key"></i>
+      </p-inputgroup-addon>
+      <input
+        pInputText
+        [(ngModel)]="password"
+        name="password"
+        type="password"
+        required
+        placeholder="Senha"
+      />
+    </p-inputgroup>
+
+    <p-inputgroup>
+      <p-inputgroup-addon>
+        <i class="pi pi-key"></i>
+      </p-inputgroup-addon>
+      <input
+        pInputText
+        [(ngModel)]="passwordConfirm"
+        name="passwordConfirm"
+        type="password"
+        required
+        placeholder="Confirmar senha"
+      />
+    </p-inputgroup>
+
+    <div class="flex flex-col gap-3">
+      <button pButton type="submit" class="p-button p-component p-button-raised w-full">
+        Registrar
+      </button>
+    </div>
+  </form>
+
+  <div class="mt-6 text-center text-sm text-slate-600">
+    <span>Já tem conta?</span>
+    <p-button link routerLink="/login" label="Entrar" size="small" />
+  </div>
+</app-header>
