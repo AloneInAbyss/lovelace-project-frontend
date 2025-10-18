@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -13,7 +13,7 @@ import { Header } from '../header/header';
   selector: 'app-forgot-password',
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     ButtonModule,
     InputGroupModule,
@@ -25,12 +25,25 @@ import { Header } from '../header/header';
   templateUrl: './forgot-password.html',
 })
 export class ForgotPassword {
-  identity = '';
+  forgotForm: FormGroup;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+    this.forgotForm = this.fb.group({
+      identity: ['', [Validators.required, Validators.email]],
+    });
+  }
 
-  simulateForgotPassword() {
-    // TODO: Implement forgot password logic
-    alert(`Forgot password requested for: ${this.identity}`);
+  get f() {
+    return this.forgotForm.controls as { [key: string]: any };
+  }
+
+  onSubmit() {
+    if (this.forgotForm.invalid) {
+      this.forgotForm.markAllAsTouched();
+      return;
+    }
+
+    // TODO: Implement forgot password logic (send reset email)
+    alert(`Forgot password requested for: ${this.forgotForm.value.identity}`);
   }
 }
