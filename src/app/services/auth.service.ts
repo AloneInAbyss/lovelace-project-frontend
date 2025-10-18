@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // true when user is logged in
   private _loggedIn = new BehaviorSubject<boolean>(false);
 
   get isLoggedIn$(): Observable<boolean> {
@@ -18,5 +17,15 @@ export class AuthService {
   // simulate logout
   logout(): void {
     this._loggedIn.next(false);
+  }
+
+  // simulate password reset email
+  sendPasswordResetEmail(email: string): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`Sending password reset email to ${email}`);
+        resolve();
+      }, 2000);
+    });
   }
 }

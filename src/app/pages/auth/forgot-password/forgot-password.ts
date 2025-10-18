@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
@@ -26,8 +27,14 @@ import { Header } from '../header/header';
 })
 export class ForgotPassword {
   forgotForm: FormGroup;
+  loading = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private messageService: MessageService
+  ) {
     this.forgotForm = this.fb.group({
       identity: ['', [Validators.required, Validators.email]],
     });
@@ -37,13 +44,33 @@ export class ForgotPassword {
     return this.forgotForm.controls as { [key: string]: any };
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.forgotForm.invalid) {
       this.forgotForm.markAllAsTouched();
       return;
     }
 
-    // TODO: Implement forgot password logic (send reset email)
-    alert(`Forgot password requested for: ${this.forgotForm.value.identity}`);
+    this.loading = true;
+
+    try {
+      await this.auth.sendPasswordResetEmail(this.f['identity'].value);
+
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Recuperação de Senha',
+        detail: `Solicitação de recuperação de senha enviada com sucesso. Verifique seu e-mail.`,
+        life: 5000,
+      });
+
+      this.router.navigate(['/login']);
+    } catch (error) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+      });
+
+      setTimeout(() => { this.loading = false; }, 3000);
+    }
   }
 }
