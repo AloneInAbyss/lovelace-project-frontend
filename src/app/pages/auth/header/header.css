@@ -1,0 +1,23 @@
+:host { display: block; }
+
+section {
+  /* final state */
+  transition: opacity 280ms cubic-bezier(.2,.8,.2,1), transform 280ms cubic-bezier(.2,.8,.2,1);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* starting-style is used by animate.enter to set the initial state */
+@starting-style {
+  section {
+    opacity: 0;
+    transform: translateY(8px) scale(.995);
+  }
+}
+
+/* class applied while leaving */
+.leaving {
+  opacity: 0;
+  transform: translateY(6px) scale(.995);
+  transition: opacity 160ms ease-in, transform 160ms ease-in;
+}

@@ -6,5 +6,6 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   standalone: true,
   templateUrl: './header.html',
+  styleUrls: ['./header.css'],
 })
 export class Header {}
