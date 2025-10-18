@@ -8,6 +8,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../services/auth.service';
 import { Header } from '../header/header';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -26,8 +27,14 @@ import { Header } from '../header/header';
 })
 export class LoginPage {
   loginForm: FormGroup;
+  loading = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private messageService: MessageService
+  ) {
     this.loginForm = this.fb.group({
       identity: ['', [Validators.required, Validators.maxLength(254)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
@@ -38,14 +45,34 @@ export class LoginPage {
     return this.loginForm.controls as { [key: string]: any };
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    // In a real app you'd call an API. For now simulate success.
-    this.auth.login();
-    this.router.navigate(['/']);
+    this.loading = true;
+
+    try {
+      await this.auth.login(this.f['identity'].value, this.f['password'].value);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Login',
+        detail: `Login realizado com sucesso.`,
+      });
+
+      this.router.navigate(['/']);
+    } catch (error) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+      });
+
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
+    }
   }
 }

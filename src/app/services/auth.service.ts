@@ -10,7 +10,18 @@ export class AuthService {
   }
 
   // simulate login
-  login(): void {
+  login(identity: string, password: string): Promise<void> {
+    this._loggedIn.next(true);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('User logged in');
+        resolve();
+      }, 2000);
+    });
+  }
+
+  // simulate registration
+  register(): void {
     this._loggedIn.next(true);
   }
 

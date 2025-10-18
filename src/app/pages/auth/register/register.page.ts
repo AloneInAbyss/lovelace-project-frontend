@@ -44,7 +44,7 @@ export class RegisterPage {
     }
 
     // Simulate registration success and log the user in for now.
-    this.auth.login();
+    this.auth.register();
     this.router.navigate(['/login']);
   }
 }

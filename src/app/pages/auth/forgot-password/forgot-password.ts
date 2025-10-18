@@ -70,7 +70,9 @@ export class ForgotPassword {
         detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
       });
 
-      setTimeout(() => { this.loading = false; }, 3000);
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
     }
   }
 }
