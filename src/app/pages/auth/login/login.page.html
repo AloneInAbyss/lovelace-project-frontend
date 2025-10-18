@@ -1,34 +1,50 @@
 <app-header>
-  <form class="space-y-6" (ngSubmit)="simulateLogin()">
-    <p-inputgroup>
-      <p-inputgroup-addon>
-        <i class="pi pi-user"></i>
-      </p-inputgroup-addon>
-      <input
-        pInputText
-        [(ngModel)]="identity"
-        name="identity"
-        required
-        placeholder="Nome de usuário ou email"
-      />
-    </p-inputgroup>
+  <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+    <div>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-user"></i>
+        </p-inputgroup-addon>
+        <input pInputText formControlName="identity" placeholder="Nome de usuário ou email" />
+      </p-inputgroup>
 
-    <p-inputgroup>
-      <p-inputgroup-addon>
-        <i class="pi pi-key"></i>
-      </p-inputgroup-addon>
-      <input
-        pInputText
-        type="password"
-        name="password"
-        [(ngModel)]="password"
-        required
-        placeholder="Senha"
-      />
-    </p-inputgroup>
+      @if (f['identity'].invalid && (f['identity'].dirty || f['identity'].touched)) {
+        <div class="text-sm text-red-600 mt-1">
+          @if (f['identity'].errors?.['required']) {
+            <div>Email ou usuário é obrigatório.</div>
+          } @if (f['identity'].errors?.['maxlength']) {
+            <div>Valor inválido.</div>
+          }
+        </div>
+      }
+    </div>
+
+    <div>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-key"></i>
+        </p-inputgroup-addon>
+        <input pInputText type="password" formControlName="password" placeholder="Senha" />
+      </p-inputgroup>
+
+      @if (f['password'].invalid && (f['password'].dirty || f['password'].touched)) {
+        <div class="text-sm text-red-600 mt-1">
+          @if (f['password'].errors?.['required']) {
+            <div>Senha é obrigatória.</div>
+          } @if (f['password'].errors?.['minlength'] || f['password'].errors?.['maxlength']) {
+            <div>Senha precisa ter 6 e 24 caracteres.</div>
+          }
+        </div>
+      }
+    </div>
 
     <div class="flex flex-col gap-3">
-      <button pButton type="submit" class="p-button p-component p-button-raised w-full">
+      <button
+        pButton
+        type="submit"
+        class="p-button p-component p-button-raised w-full"
+        [disabled]="loginForm.invalid"
+      >
         Entrar
       </button>
       <div class="flex items-center justify-between">
@@ -41,6 +57,7 @@
       </div>
     </div>
   </form>
+
   <div class="mt-6 text-center text-sm text-slate-600">
     <span>Não tem conta?</span>
     <p-button link routerLink="/register" label="Registrar" size="small" />
