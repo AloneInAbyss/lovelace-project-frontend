@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule],
-  template: `<main class="p-4"> <h1 class="text-2xl font-semibold">Home</h1> <p>Welcome to Lovelace Project.</p> </main>`,
+  templateUrl: './home.page.html',
 })
 export class HomePage {}
