@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
 
 interface PriceSet {
   new?: number | null;
@@ -25,28 +26,71 @@ interface BoardGame {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InputTextModule, InputGroupAddonModule, InputGroupModule, ButtonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    InputGroupAddonModule,
+    InputGroupModule,
+    ButtonModule,
+    MenuModule,
+  ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.css',
 })
 export class HomePage implements OnDestroy {
-  searchControl = new FormControl<string | null>('');
-  results: BoardGame[] = [];
-  loading = false;
-  showDropdown = false;
-
-  private sub: Subscription;
-
   // small mock dataset
   private mockData: BoardGame[] = [
-    { id: 'azul', name: 'Azul', color: 'linear-gradient(135deg,#F59E0B,#F97316)', prices: { new: 39.99, used: 29.5, auction: 15 } },
-    { id: 'ticket-to-ride', name: 'Ticket to Ride', color: 'linear-gradient(135deg,#06B6D4,#0EA5A0)', prices: { new: 44.99, used: 34.0, auction: 22 } },
-    { id: 'catan', name: 'Catan', color: 'linear-gradient(135deg,#EF4444,#F43F5E)', prices: { new: 49.99, used: 37.5, auction: null } },
-    { id: 'wingspan', name: 'Wingspan', color: 'linear-gradient(135deg,#7C3AED,#A78BFA)', prices: { new: 59.99, used: 45.0, auction: 30 } },
-    { id: 'gloomhaven', name: 'Gloomhaven', color: 'linear-gradient(135deg,#111827,#374151)', prices: { new: 119.99, used: 89.0, auction: 65 } },
-    { id: 'pandemic', name: 'Pandemic', color: 'linear-gradient(135deg,#10B981,#059669)', prices: { new: 34.99, used: 24.5, auction: null } },
-    { id: 'carcassonne', name: 'Carcassonne', color: 'linear-gradient(135deg,#FB7185,#F43F5E)', prices: { new: 29.99, used: 19.5, auction: 9 } },
+    {
+      id: 'azul',
+      name: 'Azul',
+      color: 'linear-gradient(135deg,#F59E0B,#F97316)',
+      prices: { new: 39.99, used: 29.5, auction: 15 },
+    },
+    {
+      id: 'ticket-to-ride',
+      name: 'Ticket to Ride',
+      color: 'linear-gradient(135deg,#06B6D4,#0EA5A0)',
+      prices: { new: 44.99, used: 34.0, auction: 22 },
+    },
+    {
+      id: 'catan',
+      name: 'Catan',
+      color: 'linear-gradient(135deg,#EF4444,#F43F5E)',
+      prices: { new: 49.99, used: 37.5, auction: null },
+    },
+    {
+      id: 'wingspan',
+      name: 'Wingspan',
+      color: 'linear-gradient(135deg,#7C3AED,#A78BFA)',
+      prices: { used: 45.0, auction: 30 },
+    },
+    {
+      id: 'gloomhaven',
+      name: 'Gloomhaven',
+      color: 'linear-gradient(135deg,#111827,#374151)',
+      prices: { new: 119.99, used: 89.0, auction: 65 },
+    },
+    {
+      id: 'pandemic',
+      name: 'Pandemic',
+      color: 'linear-gradient(135deg,#10B981,#059669)',
+      prices: { new: null, used: null, auction: null },
+    },
+    {
+      id: 'carcassonne',
+      name: 'Carcassonne',
+      color: 'linear-gradient(135deg,#FB7185,#F43F5E)',
+      prices: { auction: 9 },
+    },
   ];
+
+  searchControl = new FormControl<string | null>('');
+  results: BoardGame[] = this.mockData;
+  loading = false;
+  showDropdown = true;
+
+  private sub: Subscription;
 
   constructor(private router: Router, private host: ElementRef<HTMLElement>) {
     // wire up debounced search

@@ -13,7 +13,6 @@
       </div>
     </div>
 
-    <!-- Search bar -->
     <div class="w-full px-4 mb-64">
       <div class="relative max-w-3xl mx-auto">
         <p-inputgroup>
@@ -30,32 +29,38 @@
             placeholder="Pesquise por um jogo..."
           />
           <p-inputgroup-addon>
-            <p-button size="large" icon="pi pi-times" severity="secondary" (onClick)="searchControl.reset()"/>
+            <p-button size="large" icon="pi pi-times" severity="secondary" (onClick)="clear()"/>
           </p-inputgroup-addon>
         </p-inputgroup>
 
-        <!-- Dropdown results -->
         @if (showDropdown) {
-          <div class="absolute mt-2 left-0 right-0 bg-white border border-gray-100 rounded-lg shadow-lg z-20 overflow-hidden">
-            <ul class="divide-y">
-              <li *ngFor="let r of results" class="p-3 hover:bg-gray-50 cursor-pointer" (click)="navigateToGame(r)">
-                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold" [ngStyle]="{'background': r.color}">
-                    <!-- placeholder initials -->
-                    {{ initials(r.name) }}
-                  </div>
-                  <div class="flex-1">
-                    <div class="font-medium text-gray-800">{{ r.name }}</div>
-                    <div class="text-sm text-gray-500 mt-1">
-                      <!-- cheapest per available condition -->
-                      <span *ngIf="r.prices.new">New: {{ r.prices.new | currency }}</span>
-                      <span *ngIf="r.prices.used"> • Used: {{ r.prices.used | currency }}</span>
-                      <span *ngIf="r.prices.auction"> • Auction: {{ r.prices.auction | currency }}</span>
+          <div class="absolute left-0 right-0 bg-white border border-gray-100 rounded-lg shadow-lg z-20 overflow-hidden">
+            <ul>
+              @for (r of results; track r.id) {
+                <li class="p-3 hover:bg-gray-50 cursor-pointer" (click)="navigateToGame(r)">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold" [ngStyle]="{'background': r.color}">
+                      {{ initials(r.name) }}
+                    </div>
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800">{{ r.name }}</div>
+                      <div class="text-sm text-gray-500 mt-1">
+                        @if (r.prices.new) {
+                          <span>Novo: {{ r.prices.new | currency }}</span>
+                        }
+                        @if (r.prices.used) {
+                          <span>{{ r.prices.new ? ' • ' : '' }}Usado: {{ r.prices.used | currency }}</span>
+                        }
+                        @if (r.prices.auction) {
+                          <span>{{ r.prices.new || r.prices.used ? ' • ' : '' }}Leilão: {{ r.prices.auction | currency }}</span>
+                        }
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-              <li *ngIf="results.length === 0" class="p-3 text-center text-sm text-gray-500">No results</li>
+                </li>
+              } @empty {
+                <li class="p-3 text-center text-sm text-gray-500">Sem resultados</li>
+              }
             </ul>
           </div>
         }
