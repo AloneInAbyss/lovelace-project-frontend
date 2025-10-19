@@ -1,0 +1,73 @@
+<div class="container mx-auto px-8 py-8">
+	<div class="grid grid-cols-12 gap-6">
+    <aside class="col-span-3">
+      <p-menu class="text-sm" [model]="items" />
+    </aside>
+
+		<section class="col-span-9">
+      <div class="p-8 p-menu">
+        @if (active === 'profile') {
+          <h3 class="text-xl font-semibold mb-8">Mudar senha</h3>
+          <form (ngSubmit)="submitPassword()">
+            <div class="mb-8">
+              <p-floatlabel>
+                <input pInputText type="password" class="w-full" id="current_password" [formControl]="changePasswordForm.controls.currentPassword" />
+                <label for="current_password">Senha atual</label>
+              </p-floatlabel>
+            </div>
+
+            <div class="mb-8">
+              <p-floatlabel>
+                <input pInputText type="password" class="w-full" id="new_password" [formControl]="changePasswordForm.controls.newPassword" />
+                <label for="new_password">Nova senha</label>
+              </p-floatlabel>
+            </div>
+
+            <div class="mb-8">
+              <p-floatlabel>
+                <input pInputText type="password" class="w-full" id="confirm_password" [formControl]="changePasswordForm.controls.confirmPassword" />
+                <label for="confirm_password">Confirmar senha</label>
+              </p-floatlabel>
+            </div>
+
+            <div class="mt-4">
+              <button pButton type="submit" label="Mudar senha"></button>
+            </div>
+          </form>
+        }
+
+        @if (active === 'mail') {
+          <h3 class="text-xl font-semibold mb-8">Configurações de email</h3>
+          <form (ngSubmit)="submitMail()">
+            <div class="mb-3">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" [formControl]="mailSettingsForm.controls.newsletter" />
+                <span>Receber avisos por email</span>
+              </label>
+            </div>
+
+            <div class="mt-8">
+              <button pButton type="submit" label="Salvar configurações"></button>
+            </div>
+          </form>
+        }
+
+        @if (active === 'delete') {
+          <h3 class="text-xl font-semibold mb-8">Apagar conta</h3>
+          <p class="text-sm text-gray-600">Esta ação é irreversível. Sua conta e dados serão permanentemente excluídos.</p>
+          <div class="mt-8">
+            <button pButton type="button" label="Excluir conta" class="p-button-danger" (click)="confirmDelete()"></button>
+          </div>
+        }
+      </div>
+		</section>
+	</div>
+
+	<p-dialog header="Confirmar exclusão" [(visible)]="showDeleteConfirm" [modal]="true" [closable]="true">
+		<p>Tem certeza de que deseja excluir sua conta?</p>
+		<div class="mt-4 flex gap-2 justify-end">
+			<button pButton label="Cancelar" severity="secondary" (click)="showDeleteConfirm=false"></button>
+			<button pButton label="Sim, excluir" severity="danger" (click)="deleteAccount()"></button>
+		</div>
+	</p-dialog>
+</div>
