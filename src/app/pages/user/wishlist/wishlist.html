@@ -1,0 +1,42 @@
+<main class="max-w-4xl mx-auto px-8 py-8">
+	<h2 class="text-2xl font-semibold mb-2">Lista de Desejos</h2>
+	<p class="text-gray-600 mb-6">Jogos que você está acompanhando</p>
+
+	<div class="space-y-6">
+    @for (it of items; track it.id) {
+      <p-card class="p-2">
+        <div class="flex items-center gap-4">
+          <div class="w-32 h-32 bg-gray-100 rounded flex items-center justify-center">
+            <span class="text-gray-400">Sem imagem</span>
+          </div>
+
+          <div class="flex-1">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="text-lg font-semibold">{{ it.title }}</div>
+                <div class="text-sm text-gray-500">{{ it.totalAvailable }} disponíveis para venda</div>
+
+                <div class="mt-2 text-sm">
+                  @if (it.cheapest.new) {
+                    <div><strong>Novo por {{ it.cheapest.new | currency }}</strong></div>
+                  }
+                  @if (it.cheapest.used) {
+                    <div>Usado por {{ it.cheapest.used | currency }}</div>
+                  }
+                  @if (it.cheapest.auction) {
+                    <div>Leilão por {{ it.cheapest.auction | currency }}</div>
+                  }
+                </div>
+              </div>
+
+              <div class="flex flex-col items-end gap-3">
+                <button pButton type="button" severity="info" label="Ver Anúncios" (click)="goToListings(it)"></button>
+                <button pButton type="button" severity="secondary" label="Remover" (click)="remove(it)"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    }
+	</div>
+</main>
