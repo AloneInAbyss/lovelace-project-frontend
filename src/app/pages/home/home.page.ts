@@ -1,8 +1,16 @@
-import { Component, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, map, delay } from 'rxjs/operators';
-import { Observable, of, Subject, Subscription } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  map,
+  delay,
+  finalize,
+  takeUntil,
+} from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
@@ -88,50 +96,69 @@ export class HomePage implements OnDestroy {
   results: BoardGame[] = [];
   loading = false;
   showDropdown = false;
+  private destroy$ = new Subject<void>();
+  // explicit subject to drive the search pipeline (avoids timing/order issues with FormControl and input events)
+  private searchTerm$ = new Subject<string>();
+  // keep the last query string the pipeline processed
+  private currentQuery = '';
 
-  private searchText$ = new Subject<string>();
-
-  constructor(private router: Router) {
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {
     this.setupSearch();
   }
 
-  ngOnDestroy(): void {
-    this.searchText$?.unsubscribe();
+  // schedule detectChanges in a microtask to avoid ExpressionChangedAfterItHasBeenCheckedError
+  private scheduleDetectChanges() {
+    Promise.resolve().then(() => this.cdr.detectChanges());
   }
 
-  search(term: string) {
-    this.searchText$.next(term);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.searchTerm$.complete();
   }
 
   setupSearch() {
-    this.searchText$
+    // Use an explicit subject driven from the input event to avoid timing/order problems
+    this.searchTerm$
       .pipe(
-        map((s) => (s ?? '').trim()),
+        map((s: string | null) => (s ?? '').trim()),
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((q) => {
+        switchMap((q: string) => {
+          // track the query this pipeline iteration will handle
+          this.currentQuery = q;
           if (!q) {
-            this.loading = false;
+            // empty query: reset UI and return empty result
             this.results = [];
+            this.currentQuery = '';
             this.showDropdown = false;
+            this.loading = false;
+            // ensure view updates immediately (scheduled to avoid ExpressionChangedAfterItHasBeenCheckedError)
+            this.scheduleDetectChanges();
             return of([] as BoardGame[]);
           }
 
+          // non-empty query: show dropdown and loading
           this.loading = true;
-          this.showDropdown = false;
-          return this.mockSearch(q);
-        })
+          // ensure the dropdown/loading state shows immediately (scheduled to avoid ExpressionChangedAfterItHasBeenCheckedError)
+          this.scheduleDetectChanges();
+
+          // ensure loading is cleared when inner observable finishes/errors/is canceled
+          return this.mockSearch(q).pipe(finalize(() => (this.loading = false)));
+        }),
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (res) => {
           this.results = res;
-          this.loading = false;
-          this.showDropdown = true;
+          this.showDropdown = this.currentQuery.trim().length > 0;
+          this.scheduleDetectChanges();
         },
         error: () => {
           this.results = [];
           this.loading = false;
           this.showDropdown = false;
+          this.scheduleDetectChanges();
         },
       });
   }
@@ -139,9 +166,7 @@ export class HomePage implements OnDestroy {
   private mockSearch(q: string): Observable<BoardGame[]> {
     const normalized = q.toLowerCase();
     return of(
-      mockedGameData
-      .filter((g) => g.name.toLowerCase().includes(normalized))
-      .slice(0, 5)
+      mockedGameData.filter((g) => g.name.toLowerCase().includes(normalized)).slice(0, 5)
     ).pipe(delay(1000));
   }
 
@@ -151,10 +176,20 @@ export class HomePage implements OnDestroy {
   }
 
   clear() {
+    // update the visible input but don't rely on valueChanges for search (we push to searchTerm$ below)
     this.searchControl.setValue('');
     this.results = [];
     this.showDropdown = false;
     this.loading = false;
+    // notify pipeline about the cleared value
+    this.searchTerm$.next('');
+    this.scheduleDetectChanges();
+  }
+
+  // Ensure immediate emission when user types (handles cases where some browsers/inputs only emit on blur)
+  onInput(value: string) {
+    // push the current input value into the search pipeline (avoids setValue ordering issues)
+    this.searchTerm$.next(value);
   }
 
   initials(name: string) {

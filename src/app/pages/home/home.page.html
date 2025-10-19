@@ -25,7 +25,7 @@
           </p-inputgroup-addon>
           <input
             [formControl]="searchControl"
-            (keyup)="search($event.target.value)"
+            (input)="onInput($event.target.value)"
             type="search"
             pInputText
             pSize="large"
