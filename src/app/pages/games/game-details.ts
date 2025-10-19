@@ -95,15 +95,11 @@ export class GameDetails {
     },
   ];
 
-  // Filter state
-  showFilterPanel = false;
   selectedConditions: string[] = []; // e.g. ['Novo','Usado']
 
   // Pagination state
   rows = 10;
   first = 0;
-
-  constructor() {}
 
   get filteredListings(): Listing[] {
     if (!this.selectedConditions || this.selectedConditions.length === 0) return this.listings;
