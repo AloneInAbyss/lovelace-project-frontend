@@ -23,6 +23,7 @@ import { Header } from '../header/header';
     Header,
     RouterModule,
   ],
+  styleUrl: './register.page.css',
   templateUrl: './register.page.html',
 })
 export class RegisterPage {

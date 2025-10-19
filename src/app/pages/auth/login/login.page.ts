@@ -23,6 +23,7 @@ import { MessageService } from 'primeng/api';
     InputTextModule,
     Header,
   ],
+  styleUrl: './login.page.css',
   templateUrl: './login.page.html',
 })
 export class LoginPage {
