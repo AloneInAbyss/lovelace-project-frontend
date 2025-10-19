@@ -2,8 +2,12 @@ import { Component, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
-import { Observable, of, Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { ButtonModule } from 'primeng/button';
 
 interface PriceSet {
   new?: number | null;
@@ -21,7 +25,7 @@ interface BoardGame {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InputTextModule, InputGroupAddonModule, InputGroupModule, ButtonModule],
   templateUrl: './home.page.html',
   styleUrl: './home.page.css',
 })

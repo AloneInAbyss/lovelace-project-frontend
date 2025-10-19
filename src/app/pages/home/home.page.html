@@ -1,67 +1,64 @@
-<main class="h-full w-full flex flex-col items-center ">
+<main class="h-full w-full flex flex-col items-center">
 
   <section class="flex-1 w-full max-w-4xl flex flex-col items-center justify-center py-12">
     <div class="mb-12 flex items-center justify-center">
-      <a routerLink="/" class="flex flex-col items-center gap-2 no-underline" aria-label="Lovelace Project">
-        <!-- responsive square logo -->
+      <div  class="flex flex-col items-center gap-4">
         <div
-          class="bg-black text-white font-bold flex items-center justify-center rounded w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 text-lg sm:text-xl md:text-2xl"
-          aria-hidden="true"
+          class="bg-black text-white font-bold flex items-center justify-center rounded w-40 h-40 text-3xl"
         >
           LP
         </div>
 
-        <!-- site name: hidden on very small screens -->
-        <h1 class="hidden sm:block text-base sm:text-lg md:text-2xl text-gray-900">Lovelace Project</h1>
-      </a>
+        <h1 class="text-2xl font-bold">Lovelace Project</h1>
+      </div>
     </div>
 
     <!-- Search bar -->
-    <div class="w-full px-4">
+    <div class="w-full px-4 mb-64">
       <div class="relative max-w-3xl mx-auto">
-        <input
-          [formControl]="searchControl"
-          (focus)="showDropdown = results.length > 0"
-          type="search"
-          class="w-full rounded-full border border-gray-200 px-6 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 placeholder-gray-500"
-          placeholder="Pesquise por um jogo..."
-          aria-label="search"
-        />
-
-        <!-- clear button -->
-        <button
-          *ngIf="searchControl.value"
-          (click)="clear()"
-          class="absolute right-4 top-1/2 -translate-y-1/2 bg-white rounded-full p-1 text-gray-500 hover:bg-gray-50"
-          aria-label="clear search"
-          type="button"
-        >
-          ✕
-        </button>
+        <p-inputgroup>
+          <p-inputgroup-addon>
+            <i class="pi pi-search text-lg"></i>
+          </p-inputgroup-addon>
+          <input
+            [formControl]="searchControl"
+            (focus)="showDropdown = results.length > 0"
+            type="search"
+            pInputText
+            pSize="large"
+            fluid
+            placeholder="Pesquise por um jogo..."
+          />
+          <p-inputgroup-addon>
+            <p-button size="large" icon="pi pi-times" severity="secondary" (onClick)="searchControl.reset()"/>
+          </p-inputgroup-addon>
+        </p-inputgroup>
 
         <!-- Dropdown results -->
-        <div *ngIf="showDropdown" class="absolute mt-2 left-0 right-0 bg-white border border-gray-100 rounded-lg shadow-lg z-20 overflow-hidden">
-          <ul class="divide-y">
-            <li *ngFor="let r of results" class="p-3 hover:bg-gray-50 cursor-pointer" (click)="navigateToGame(r)">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold" [ngStyle]="{'background': r.color}">
-                  <!-- placeholder initials -->
-                  {{ initials(r.name) }}
-                </div>
-                <div class="flex-1">
-                  <div class="font-medium text-gray-800">{{ r.name }}</div>
-                  <div class="text-sm text-gray-500 mt-1">
-                    <!-- cheapest per available condition -->
-                    <span *ngIf="r.prices.new">New: {{ r.prices.new | currency }}</span>
-                    <span *ngIf="r.prices.used"> • Used: {{ r.prices.used | currency }}</span>
-                    <span *ngIf="r.prices.auction"> • Auction: {{ r.prices.auction | currency }}</span>
+        @if (showDropdown) {
+          <div class="absolute mt-2 left-0 right-0 bg-white border border-gray-100 rounded-lg shadow-lg z-20 overflow-hidden">
+            <ul class="divide-y">
+              <li *ngFor="let r of results" class="p-3 hover:bg-gray-50 cursor-pointer" (click)="navigateToGame(r)">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold" [ngStyle]="{'background': r.color}">
+                    <!-- placeholder initials -->
+                    {{ initials(r.name) }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-800">{{ r.name }}</div>
+                    <div class="text-sm text-gray-500 mt-1">
+                      <!-- cheapest per available condition -->
+                      <span *ngIf="r.prices.new">New: {{ r.prices.new | currency }}</span>
+                      <span *ngIf="r.prices.used"> • Used: {{ r.prices.used | currency }}</span>
+                      <span *ngIf="r.prices.auction"> • Auction: {{ r.prices.auction | currency }}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-            <li *ngIf="results.length === 0" class="p-3 text-center text-sm text-gray-500">No results</li>
-          </ul>
-        </div>
+              </li>
+              <li *ngIf="results.length === 0" class="p-3 text-center text-sm text-gray-500">No results</li>
+            </ul>
+          </div>
+        }
       </div>
     </div>
   </section>
