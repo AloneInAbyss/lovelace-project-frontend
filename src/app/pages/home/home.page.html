@@ -17,11 +17,15 @@
       <div class="relative max-w-3xl mx-auto">
         <p-inputgroup>
           <p-inputgroup-addon>
-            <i class="pi pi-search text-lg"></i>
+            @if (loading) {
+              <i class="pi pi-spin pi-spinner text-lg"></i>
+            } @else {
+              <i class="pi pi-search text-lg"></i>
+            }
           </p-inputgroup-addon>
           <input
             [formControl]="searchControl"
-            (focus)="showDropdown = results.length > 0"
+            (keyup)="search($event.target.value)"
             type="search"
             pInputText
             pSize="large"
