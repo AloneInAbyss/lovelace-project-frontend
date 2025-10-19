@@ -1,0 +1,76 @@
+<main class="h-full w-full flex flex-col items-center">
+  <div class="w-full max-w-4xl px-8 py-8">
+
+    <div class="w-full flex flex-row items-center my-8">
+      <div class="w-50 h-50 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+        Sem imagem
+      </div>
+
+      <div class="p-4 ml-8">
+        <h2 class="text-2xl font-semibold">{{ game.name }}</h2>
+        <div class="mt-3 text-gray-600">
+          @if (game.cheapest.new || game.cheapest.used || game.cheapest.auction) {
+            <div class="pb-2">Menores preços:</div>
+
+            @if (game.cheapest.new) {
+              <div>Novo: <span>{{ game.cheapest.new | currency }}</span></div>
+            }
+
+            @if (game.cheapest.used) {
+              <div>Usado: <span>{{ game.cheapest.used | currency }}</span></div>
+            }
+
+            @if (game.cheapest.auction) {
+              <div>Leilão: <span>{{ game.cheapest.auction | currency }}</span></div>
+            }
+          } @else {
+            <div>Sem anúncios disponíveis</div>
+          }
+        </div>
+
+        <div class="mt-4">
+          <p-button label="Adicionar na lista" severity="info" icon="pi pi-plus" iconPos="right" (click)="addToWishlist()" />
+        </div>
+      </div>
+    </div>
+
+
+    <div class="flex flex-row items-center gap-2 mb-4">
+
+      <p-button icon="pi pi-filter" label="Filtros" variant="outlined" severity="secondary" (click)="showFilterPanel = !showFilterPanel" />
+
+      <button pButton label="Novo" severity="secondary" size="small">
+        <i class="pi pi-times" pButtonIcon></i>
+        <span pButtonLabel class="text-shadow-2xs">Novo</span>
+      </button>
+      <button pButton label="Novo" severity="secondary" size="small">
+        <i class="pi pi-times" pButtonIcon></i>
+        <span pButtonLabel class="text-shadow-2xs">Usado</span>
+      </button>
+      <button pButton label="Novo" severity="secondary" size="small">
+        <i class="pi pi-times" pButtonIcon></i>
+        <span pButtonLabel class="text-shadow-2xs">Leilão</span>
+      </button>
+
+    </div>
+
+    <p-table [value]="filteredListings" [paginator]="true" [rows]="rows" [first]="first" (onPage)="onPage($event)">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Local</th>
+          <th>Condição</th>
+          <th style="text-align:right">Preço</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td >{{ row.city }}</td>
+          <td>{{ row.condition }}</td>
+          <td style="text-align:right">{{ row.price | currency }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</main>
+
