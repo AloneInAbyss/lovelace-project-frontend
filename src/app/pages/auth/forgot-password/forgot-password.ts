@@ -23,6 +23,7 @@ import { Header } from '../header/header';
     Header,
   ],
   standalone: true,
+  styleUrl: './forgot-password.css',
   templateUrl: './forgot-password.html',
 })
 export class ForgotPassword {
