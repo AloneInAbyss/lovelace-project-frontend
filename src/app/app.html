@@ -1,9 +1,11 @@
 <p-toast />
 
-@if (showNavbar) {
-  <app-navbar></app-navbar>
-}
+<div class="min-h-screen flex flex-col">
+  @if (showNavbar) {
+    <app-navbar></app-navbar>
+  }
 
-<main class="pt-4">
-  <router-outlet />
-</main>
+  <main class="flex flex-1 pt-4">
+    <router-outlet />
+  </main>
+</div>
