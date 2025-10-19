@@ -45,3 +45,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Tests
+
+- Tests should use the `provideZonelessChangeDetection()` provider, imported from `@angular/core`, to avoid zone.js dependency. Also, instead of using `fixture.detectChanges()`, use await `fixture.whenStable()` to trigger change detection.
