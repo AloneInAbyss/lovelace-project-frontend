@@ -40,7 +40,7 @@ export class RegisterPage {
       {
         email: ['', [Validators.required, Validators.email]],
         username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(24)]],
-        password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
+        password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
         passwordConfirm: ['', [Validators.required]],
       },
       { validators: this.passwordsMatchValidator }
@@ -66,30 +66,33 @@ export class RegisterPage {
     this.loading = true;
 
     try {
-      await this.auth.register(
+      const response = await this.auth.register(
         this.f['email'].value,
         this.f['username'].value,
         this.f['password'].value
       );
 
+      // Show success message from backend or default message
+      const message = response.message || 'Acesse o link de verificação enviado para seu email para ativar sua conta.';
+
       this.messageService.add({
         severity: 'info',
         summary: 'Registro',
-        detail: `Acesse o link de verificação enviado para seu email para ativar sua conta.`,
+        detail: message,
         life: 15000,
       });
 
       this.router.navigate(['/login']);
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.';
+
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
-        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        detail: errorMessage,
       });
 
-      setTimeout(() => {
-        this.loading = false;
-      }, 3000);
+      this.loading = false;
     }
   }
 }

@@ -51,7 +51,7 @@
           @if (f['password'].errors?.['required']) {
             <div>Senha é obrigatória.</div>
           } @if (f['password'].errors?.['minlength'] || f['password'].errors?.['maxlength']) {
-            <div>Senha precisa ter entre 6 e 64 caracteres.</div>
+            <div>Senha precisa ter entre 8 e 64 caracteres.</div>
           }
         </div>
       }
