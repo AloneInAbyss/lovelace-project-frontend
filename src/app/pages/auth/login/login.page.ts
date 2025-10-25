@@ -69,16 +69,24 @@ export class LoginPage {
       });
 
       this.router.navigate([this.returnUrl]);
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
-      });
+    } catch (error: any) {
+      if (error?.cause === 'Email Not Verified') {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Info',
+          detail: error?.message,
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail:
+            error?.message ||
+            'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        });
+      }
 
-      setTimeout(() => {
-        this.loading = false;
-      }, 3000);
+      this.loading = false;
     }
   }
 }

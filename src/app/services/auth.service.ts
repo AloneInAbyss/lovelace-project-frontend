@@ -134,7 +134,10 @@ export class AuthService {
       // Backend returned an unsuccessful response code
       const errorResponse = error.error as ErrorResponse;
 
-      if (errorResponse?.message) {
+      if (errorResponse?.error === 'Email Not Verified') {
+        errorMessage = 'Email não verificado. Por favor, verifique seu email.';
+        return throwError(() => new Error(errorMessage, { cause: "Email Not Verified" }));
+      } else if (errorResponse?.message) {
         errorMessage = errorResponse.message;
       } else if (errorResponse?.errors) {
         // Validation errors from backend
