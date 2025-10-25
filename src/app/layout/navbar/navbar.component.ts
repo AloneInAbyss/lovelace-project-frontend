@@ -86,9 +86,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return (this.currentUrl.startsWith(path) ? 'primary' : 'secondary') as ButtonSeverity;
   }
 
-  private signOut(): void {
+  private async signOut(): Promise<void> {
     try {
-      this.auth.logout();
+      await this.auth.logout();
       this.router.navigate(['/login']);
     } catch (error) {
       this.messageService.add({
