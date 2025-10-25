@@ -40,7 +40,7 @@ export class LoginPage {
   ) {
     this.loginForm = this.fb.group({
       identity: ['', [Validators.required, Validators.maxLength(254)]],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
     });
 
     // Get return URL from route parameters or default to '/'

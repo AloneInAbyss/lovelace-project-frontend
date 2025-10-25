@@ -134,7 +134,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
 
       try {
-        const response = await this.authService.verifyEmail(token);
+        await this.authService.verifyEmail(token);
 
         this.messageService.add({
           severity: 'success',

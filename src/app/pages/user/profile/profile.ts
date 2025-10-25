@@ -41,7 +41,7 @@ export class Profile {
     this.fb = fb;
     this.changePasswordForm = this.fb.group({
       currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
       confirmPassword: ['', Validators.required],
     });
 
