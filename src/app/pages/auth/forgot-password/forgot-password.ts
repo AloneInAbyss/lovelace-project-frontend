@@ -64,12 +64,20 @@ export class ForgotPassword {
       });
 
       this.router.navigate(['/login']);
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
-      });
+    } catch (error: any) {
+      if (error?.cause === 'Forgot Password Email Pending') {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Info',
+          detail: error?.message,
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        });
+      }
 
       this.loading = false;
     }

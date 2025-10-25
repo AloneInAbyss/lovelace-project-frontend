@@ -148,6 +148,11 @@ export class AuthService {
       if (errorResponse?.error === 'Email Not Verified') {
         errorMessage = 'Email não verificado. Por favor, verifique seu email.';
         return throwError(() => new Error(errorMessage, { cause: "Email Not Verified" }));
+      } else if (errorResponse?.error === 'Forgot Password Email Pending') {
+        errorMessage = 'Um email de redefinição de senha já foi enviado. Por favor, verifique seu email.';
+        return throwError(
+          () => new Error(errorMessage, { cause: 'Forgot Password Email Pending' })
+        );
       } else if (errorResponse?.message) {
         errorMessage = errorResponse.message;
       } else if (errorResponse?.errors) {
