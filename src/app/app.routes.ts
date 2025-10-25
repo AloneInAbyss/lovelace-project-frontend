@@ -11,6 +11,7 @@ import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
 	{ path: '', component: HomePage },
+	{ path: 'verify-email', component: HomePage, data: { verifyEmail: true } },
 	{ path: 'game/:id', component: GameDetails },
 	{ path: 'wishlist', component: Wishlist, canActivate: [authGuard] },
 	{ path: 'profile', component: Profile, canActivate: [authGuard] },

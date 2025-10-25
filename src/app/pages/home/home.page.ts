@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -11,12 +11,14 @@ import {
   takeUntil,
 } from 'rxjs/operators';
 import { Observable, of, Subject } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../services/auth.service';
 
 interface PriceSet {
   new?: number | null;
@@ -91,7 +93,7 @@ const mockedGameData: BoardGame[] = [
   templateUrl: './home.page.html',
   styleUrl: './home.page.css',
 })
-export class HomePage implements OnDestroy {
+export class HomePage implements OnInit, OnDestroy {
   searchControl = new FormControl<string | null>('');
   results: BoardGame[] = [];
   loading = false;
@@ -102,13 +104,55 @@ export class HomePage implements OnDestroy {
   // keep the last query string the pipeline processed
   private currentQuery = '';
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {
+  constructor(
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private messageService: MessageService,
+    private authService: AuthService
+  ) {
     this.setupSearch();
   }
 
   // schedule detectChanges in a microtask to avoid ExpressionChangedAfterItHasBeenCheckedError
   private scheduleDetectChanges() {
     Promise.resolve().then(() => this.cdr.detectChanges());
+  }
+
+  async ngOnInit(): Promise<void> {
+    if (this.route.snapshot.data['verifyEmail']) {
+      const token = this.route.snapshot.queryParams['token'];
+
+      if (!token) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Token de verificação não fornecido.',
+        });
+
+        return;
+      }
+
+      try {
+        const response = await this.authService.verifyEmail(token);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Email verificado com sucesso! Você pode fazer login agora.'
+        });
+
+        this.router.navigate(['/login']);
+      } catch (error: any) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: error?.message || 'Token de verificação inválido ou expirado.'
+        });
+
+        this.router.navigate(['/']);
+      }
+    }
   }
 
   ngOnDestroy(): void {

@@ -123,6 +123,17 @@ export class AuthService {
     );
   }
 
+  // Verify email with token
+  verifyEmail(token: string): Promise<{ message: string }> {
+    return firstValueFrom(
+      this.http.get<{ message: string }>(
+        `${this.apiUrl}/auth/verify-email?token=${token}`
+      ).pipe(
+        catchError(this.handleError)
+      )
+    );
+  }
+
   // Handle HTTP errors
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.';
