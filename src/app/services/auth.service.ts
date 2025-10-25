@@ -134,6 +134,18 @@ export class AuthService {
     );
   }
 
+  // Reset password with token
+  resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    return firstValueFrom(
+      this.http.post<{ message: string }>(
+        `${this.apiUrl}/auth/reset-password`,
+        { token, newPassword }
+      ).pipe(
+        catchError(this.handleError)
+      )
+    );
+  }
+
   // Handle HTTP errors
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.';

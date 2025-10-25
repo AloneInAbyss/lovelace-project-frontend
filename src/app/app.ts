@@ -37,6 +37,6 @@ export class App implements OnInit, OnDestroy {
 
   private isAuthRoute(url: string) {
     const path = (url || '/').split('?')[0].split('#')[0];
-    return path === '/login' || path === '/register' || path === '/forgot-password';
+    return path === '/login' || path === '/register' || path === '/forgot-password' || path === '/reset-password';
   }
 }
