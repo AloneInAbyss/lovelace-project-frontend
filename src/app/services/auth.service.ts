@@ -146,6 +146,33 @@ export class AuthService {
     );
   }
 
+  // Change password (of an authenticated user)
+  changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      return Promise.reject(new Error('Usuário não autenticado.'));
+    }
+
+    return firstValueFrom(
+      this.http.post<{ message: string }>(
+        `${this.apiUrl}/auth/change-password`,
+        { currentPassword, newPassword },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      ).pipe(
+        map((response) => {
+          // Clear auth state since user needs to log in again after password change
+          this.clearAuthState();
+          return response;
+        }),
+        catchError(this.handleError)
+      )
+    );
+  }
+
   // Handle HTTP errors
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.';

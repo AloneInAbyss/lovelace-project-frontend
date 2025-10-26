@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PanelModule } from 'primeng/panel';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -32,18 +34,34 @@ export class Profile {
   active = 'profile';
 
   fb!: FormBuilder;
-  changePasswordForm: any;
+  changePasswordForm: FormGroup;
   mailSettingsForm: any;
 
   showDeleteConfirm = false;
+  loading = false;
 
-  constructor(fb: FormBuilder) {
+  // Password match validator
+  private passwordsMatchValidator(group: FormGroup) {
+    const newPw = group.get('newPassword')?.value;
+    const confirmPw = group.get('confirmPassword')?.value;
+    return newPw && confirmPw && newPw === confirmPw ? null : { passwordMismatch: true };
+  }
+
+  constructor(
+    fb: FormBuilder,
+    private authService: AuthService,
+    private messageService: MessageService,
+    private router: Router
+  ) {
     this.fb = fb;
-    this.changePasswordForm = this.fb.group({
-      currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
-      confirmPassword: ['', Validators.required],
-    });
+    this.changePasswordForm = this.fb.group(
+      {
+        currentPassword: ['', Validators.required],
+        newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: this.passwordsMatchValidator.bind(this) }
+    );
 
     this.mailSettingsForm = this.fb.group({
       newsletter: [true],
@@ -69,10 +87,39 @@ export class Profile {
     this.active = id;
   }
 
-  submitPassword() {
-    if (this.changePasswordForm.invalid) return;
-    // mock submit
-    console.log('Change password', this.changePasswordForm.value);
+  get f() {
+    return this.changePasswordForm.controls as { [key: string]: any };
+  }
+
+  async submitPassword() {
+    if (this.changePasswordForm.invalid) {
+      this.changePasswordForm.markAllAsTouched();
+      return;
+    }
+
+    const { currentPassword, newPassword } = this.changePasswordForm.value;
+
+    this.loading = true;
+
+    try {
+      await this.authService.changePassword(currentPassword, newPassword);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'Senha alterada com sucesso! Faça login novamente.'
+      });
+
+      this.router.navigate(['/login']);
+    } catch (error: any) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: error?.message || 'Não foi possível alterar a senha. Verifique se a senha atual está correta.',
+      });
+
+      this.loading = false;
+    }
   }
 
   submitMail() {

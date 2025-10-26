@@ -8,40 +8,43 @@
       <div class="p-8 p-menu">
         @if (active === 'profile') {
           <h3 class="text-xl font-semibold mb-8">Mudar senha</h3>
-          <form (ngSubmit)="submitPassword()">
+          <form [formGroup]="changePasswordForm" (ngSubmit)="submitPassword()">
             <div class="mb-8">
               <p-floatlabel>
-                <input pInputText type="password" class="w-full" id="current_password" [formControl]="changePasswordForm.controls.currentPassword" />
+                <input pInputText type="password" class="w-full" id="current_password" formControlName="currentPassword" />
                 <label for="current_password">Senha atual</label>
               </p-floatlabel>
             </div>
 
             <div class="mb-8">
               <p-floatlabel>
-                <input pInputText type="password" class="w-full" id="new_password" [formControl]="changePasswordForm.controls.newPassword" />
+                <input pInputText type="password" class="w-full" id="new_password" formControlName="newPassword" />
                 <label for="new_password">Nova senha</label>
               </p-floatlabel>
             </div>
 
             <div class="mb-8">
               <p-floatlabel>
-                <input pInputText type="password" class="w-full" id="confirm_password" [formControl]="changePasswordForm.controls.confirmPassword" />
+                <input pInputText type="password" class="w-full" id="confirm_password" formControlName="confirmPassword" />
                 <label for="confirm_password">Confirmar senha</label>
               </p-floatlabel>
+              @if (changePasswordForm.errors?.['passwordMismatch'] && (f['confirmPassword'].dirty || f['confirmPassword'].touched)) {
+                <div class="text-sm text-red-600 mt-1">As senhas não coincidem.</div>
+              }
             </div>
 
             <div class="mt-4">
-              <button pButton type="submit" label="Mudar senha"></button>
+              <button pButton type="submit" label="Mudar senha" [loading]="loading" [disabled]="changePasswordForm.invalid"></button>
             </div>
           </form>
         }
 
         @if (active === 'mail') {
           <h3 class="text-xl font-semibold mb-8">Configurações de email</h3>
-          <form (ngSubmit)="submitMail()">
+          <form [formGroup]="mailSettingsForm" (ngSubmit)="submitMail()">
             <div class="mb-3">
               <label class="flex items-center gap-2">
-                <input type="checkbox" [formControl]="mailSettingsForm.controls.newsletter" />
+                <input type="checkbox" formControlName="newsletter" />
                 <span>Receber avisos por email</span>
               </label>
             </div>
