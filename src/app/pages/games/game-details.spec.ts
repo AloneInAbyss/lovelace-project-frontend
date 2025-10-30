@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameDetails } from './game-details';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('GameDetails', () => {
   let component: GameDetails;
@@ -8,7 +9,10 @@ describe('GameDetails', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GameDetails]
+      imports: [GameDetails],
+      providers: [
+        provideZonelessChangeDetection(),
+      ],
     })
     .compileComponents();
 
