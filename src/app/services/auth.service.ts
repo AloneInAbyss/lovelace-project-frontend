@@ -1,8 +1,9 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, firstValueFrom, map, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, ErrorResponse, RegisterRequest } from '../models/auth.models';
+import { AuthResponse, MessageResponse, RegisterResponse } from '../models/auth.response.model';
+import { ChangePasswordRequest, ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest } from '../models/auth.request.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -53,44 +54,42 @@ export class AuthService {
   }
 
   // Register a new user
-  register(email: string, username: string, password: string): Promise<AuthResponse> {
+  register(email: string, username: string, password: string): Promise<RegisterResponse> {
     const request: RegisterRequest = { email, username, password };
 
     return firstValueFrom(
-      this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request).pipe(
-        catchError(this.handleError)
-      )
+      this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register`, request)
     );
   }
 
   // Login
   login(identity: string, password: string): Promise<AuthResponse> {
+    const request: LoginRequest = { identity, password };
     return firstValueFrom(
       this.http.post<AuthResponse>(
         `${this.apiUrl}/auth/login`,
-        { identity, password },
+        request,
         { withCredentials: true } // Important for cookies
       ).pipe(
         map((response) => {
           this.saveAuthState(response);
           return response;
-        }),
-        catchError(this.handleError)
+        })
       )
     );
   }
 
   // Logout
-  logout(): Promise<void> {
+  logout(): Promise<MessageResponse> {
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
       this.clearAuthState();
-      return Promise.resolve();
+      return Promise.resolve({ message: 'Token não encontrado' });
     }
 
     return firstValueFrom(
-      this.http.post<{ message: string }>(
+      this.http.post<MessageResponse>(
         `${this.apiUrl}/auth/logout`,
         {},
         {
@@ -98,8 +97,9 @@ export class AuthService {
           withCredentials: true,
         }
       ).pipe(
-        map(() => {
+        map((response) => {
           this.clearAuthState();
+          return response;
         }),
         catchError((error) => {
           // Clear auth state even if logout fails
@@ -110,54 +110,50 @@ export class AuthService {
     );
   }
 
-  // Send password reset email
-  sendPasswordResetEmail(email: string): Promise<void> {
+  // Verify email with token
+  verifyEmail(token: string): Promise<MessageResponse> {
     return firstValueFrom(
-      this.http.post<{ message: string }>(
-        `${this.apiUrl}/auth/forgot-password`,
-        { email }
-      ).pipe(
-        map(() => undefined),
-        catchError(this.handleError)
+      this.http.get<MessageResponse>(
+        `${this.apiUrl}/auth/verify-email?token=${token}`
       )
     );
   }
 
-  // Verify email with token
-  verifyEmail(token: string): Promise<{ message: string }> {
+  // Send password reset email
+  sendPasswordResetEmail(email: string): Promise<MessageResponse> {
+    const request: ForgotPasswordRequest = { email };
     return firstValueFrom(
-      this.http.get<{ message: string }>(
-        `${this.apiUrl}/auth/verify-email?token=${token}`
-      ).pipe(
-        catchError(this.handleError)
+      this.http.post<MessageResponse>(
+        `${this.apiUrl}/auth/forgot-password`,
+        request
       )
     );
   }
 
   // Reset password with token
-  resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  resetPassword(token: string, newPassword: string): Promise<MessageResponse> {
+    const request: ResetPasswordRequest = { token, newPassword };
     return firstValueFrom(
-      this.http.post<{ message: string }>(
+      this.http.post<MessageResponse>(
         `${this.apiUrl}/auth/reset-password`,
-        { token, newPassword }
-      ).pipe(
-        catchError(this.handleError)
+        request
       )
     );
   }
 
   // Change password (of an authenticated user)
-  changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  changePassword(currentPassword: string, newPassword: string): Promise<MessageResponse> {
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
       return Promise.reject(new Error('Usuário não autenticado.'));
     }
 
+    const request: ChangePasswordRequest = { currentPassword, newPassword };
     return firstValueFrom(
-      this.http.post<{ message: string }>(
+      this.http.post<MessageResponse>(
         `${this.apiUrl}/auth/change-password`,
-        { currentPassword, newPassword },
+        request,
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
@@ -167,50 +163,8 @@ export class AuthService {
           // Clear auth state since user needs to log in again after password change
           this.clearAuthState();
           return response;
-        }),
-        catchError(this.handleError)
+        })
       )
     );
-  }
-
-  // Handle HTTP errors
-  private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.';
-
-    if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
-      errorMessage = `Erro: ${error.error.message}`;
-    } else {
-      // Backend returned an unsuccessful response code
-      const errorResponse = error.error as ErrorResponse;
-
-      if (errorResponse?.error === 'Email Not Verified') {
-        errorMessage = 'Email não verificado. Por favor, verifique seu email.';
-        return throwError(() => new Error(errorMessage, { cause: "Email Not Verified" }));
-      } else if (errorResponse?.error === 'Forgot Password Email Pending') {
-        errorMessage = 'Um email de redefinição de senha já foi enviado. Por favor, verifique seu email.';
-        return throwError(
-          () => new Error(errorMessage, { cause: 'Forgot Password Email Pending' })
-        );
-      } else if (errorResponse?.message) {
-        errorMessage = errorResponse.message;
-      } else if (errorResponse?.errors) {
-        // Validation errors from backend
-        const validationErrors = Object.values(errorResponse.errors).join(', ');
-        errorMessage = validationErrors;
-      } else if (error.status === 0) {
-        errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
-      } else if (error.status === 401) {
-        errorMessage = 'Credenciais inválidas.';
-      } else if (error.status === 403) {
-        errorMessage = 'Acesso negado.';
-      } else if (error.status === 404) {
-        errorMessage = 'Recurso não encontrado.';
-      } else if (error.status >= 500) {
-        errorMessage = 'Erro no servidor. Tente novamente mais tarde.';
-      }
-    }
-
-    return throwError(() => new Error(errorMessage));
   }
 }
