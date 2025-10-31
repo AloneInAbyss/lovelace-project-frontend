@@ -134,12 +134,12 @@ export class HomePage implements OnInit, OnDestroy {
       }
 
       try {
-        await this.authService.verifyEmail(token);
+        const response = await this.authService.verifyEmail(token);
 
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
-          detail: 'Email verificado com sucesso! Você pode fazer login agora.'
+          detail: response.message || 'Email verificado com sucesso! Você pode fazer login agora.'
         });
 
         this.router.navigate(['/login']);
@@ -147,7 +147,7 @@ export class HomePage implements OnInit, OnDestroy {
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
-          detail: error?.message || 'Token de verificação inválido ou expirado.'
+          detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
         });
 
         this.router.navigate(['/']);

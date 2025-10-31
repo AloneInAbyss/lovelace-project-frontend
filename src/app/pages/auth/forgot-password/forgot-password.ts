@@ -54,18 +54,18 @@ export class ForgotPassword {
     this.loading = true;
 
     try {
-      await this.auth.sendPasswordResetEmail(this.f['identity'].value);
+      const response = await this.auth.sendPasswordResetEmail(this.f['identity'].value);
 
       this.messageService.add({
         severity: 'info',
         summary: 'Recuperação de Senha',
-        detail: `Solicitação de recuperação de senha enviada com sucesso. Verifique seu e-mail.`,
+        detail: response.message || `Solicitação de recuperação de senha enviada com sucesso. Verifique seu e-mail.`,
         life: 5000,
       });
 
       this.router.navigate(['/login']);
     } catch (error: any) {
-      if (error?.cause === 'Forgot Password Email Pending') {
+      if (error?.errorCode === 'PASSWORD_RESET_PENDING') {
         this.messageService.add({
           severity: 'info',
           summary: 'Info',
@@ -75,7 +75,7 @@ export class ForgotPassword {
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
-          detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+          detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
         });
       }
 

@@ -90,11 +90,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     try {
       await this.auth.logout();
       this.router.navigate(['/login']);
-    } catch (error) {
+    } catch (error: any) {
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
-        detail: 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
       });
     }
   }

@@ -62,15 +62,9 @@ export class LoginPage {
     try {
       await this.auth.login(this.f['identity'].value, this.f['password'].value);
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Login',
-        detail: `Login realizado com sucesso.`,
-      });
-
       this.router.navigate([this.returnUrl]);
     } catch (error: any) {
-      if (error?.cause === 'Email Not Verified') {
+      if (error?.errorCode === 'EMAIL_NOT_VERIFIED_PENDING' || error?.errorCode === 'EMAIL_NOT_VERIFIED_SENT') {
         this.messageService.add({
           severity: 'info',
           summary: 'Info',

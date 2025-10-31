@@ -102,12 +102,12 @@ export class Profile {
     this.loading = true;
 
     try {
-      await this.authService.changePassword(currentPassword, newPassword);
+      const response = await this.authService.changePassword(currentPassword, newPassword);
 
       this.messageService.add({
         severity: 'success',
         summary: 'Sucesso',
-        detail: 'Senha alterada com sucesso! Faça login novamente.'
+        detail: response.message || 'Senha alterada com sucesso! Faça login novamente.'
       });
 
       this.router.navigate(['/login']);
@@ -115,7 +115,7 @@ export class Profile {
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
-        detail: error?.message || 'Não foi possível alterar a senha. Verifique se a senha atual está correta.',
+        detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
       });
 
       this.loading = false;

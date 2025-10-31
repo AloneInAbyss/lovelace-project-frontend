@@ -79,12 +79,12 @@ export class ResetPassword implements OnInit {
     this.loading = true;
 
     try {
-      await this.auth.resetPassword(this.token, this.f['password'].value);
+      const response = await this.auth.resetPassword(this.token, this.f['password'].value);
 
       this.messageService.add({
         severity: 'success',
         summary: 'Sucesso',
-        detail: 'Senha redefinida com sucesso! Você pode fazer login agora.',
+        detail: response.message || 'Senha redefinida com sucesso! Você pode fazer login agora.',
         life: 5000,
       });
 
@@ -93,7 +93,7 @@ export class ResetPassword implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
-        detail: error?.message || 'Token de redefinição inválido ou expirado.',
+        detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
       });
 
       this.loading = false;

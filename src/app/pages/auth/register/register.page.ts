@@ -72,13 +72,10 @@ export class RegisterPage {
         this.f['password'].value
       );
 
-      // Show success message from backend or default message
-      const message = response.message || 'Acesse o link de verificação enviado para seu email para ativar sua conta.';
-
       this.messageService.add({
         severity: 'info',
         summary: 'Registro',
-        detail: message,
+        detail: response.message || 'Registro bem-sucedido! Verifique seu email para o link de verificação.',
         life: 15000,
       });
 
