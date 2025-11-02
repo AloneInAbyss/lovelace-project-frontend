@@ -69,15 +69,15 @@ export class Profile {
 
     this.items = [
       {
-        label: 'Perfil',
+        label: $localize`Perfil`,
         items: [
-          { label: 'Mudar senha', icon: 'pi pi-key', command: () => this.select('profile') },
+          { label: $localize`Mudar senha`, icon: 'pi pi-key', command: () => this.select('profile') },
           {
-            label: 'Configurações de email',
+            label: $localize`Configurações de email`,
             icon: 'pi pi-envelope',
             command: () => this.select('mail'),
           },
-          { label: 'Excluir Conta', icon: 'pi pi-trash', command: () => this.select('delete') },
+          { label: $localize`Excluir Conta`, icon: 'pi pi-trash', command: () => this.select('delete') },
         ],
       },
     ];
@@ -106,16 +106,16 @@ export class Profile {
 
       this.messageService.add({
         severity: 'success',
-        summary: 'Sucesso',
-        detail: response.message || 'Senha alterada com sucesso! Faça login novamente.'
+        summary: $localize`Sucesso`,
+        detail: response.message || $localize`Senha alterada com sucesso! Faça login novamente.`
       });
 
       this.router.navigate(['/login']);
     } catch (error: any) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
-        detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        summary: $localize`Erro`,
+        detail: error?.message || $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`,
       });
 
       this.loading = false;

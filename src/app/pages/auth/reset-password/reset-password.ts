@@ -53,8 +53,8 @@ export class ResetPassword implements OnInit {
     if (!this.token) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
-        detail: 'Token de redefinição de senha não fornecido.',
+        summary: $localize`Erro`,
+        detail: $localize`Token de redefinição de senha não fornecido.`,
       });
       this.router.navigate(['/login']);
     }
@@ -83,8 +83,8 @@ export class ResetPassword implements OnInit {
 
       this.messageService.add({
         severity: 'success',
-        summary: 'Sucesso',
-        detail: response.message || 'Senha redefinida com sucesso! Você pode fazer login agora.',
+        summary: $localize`Sucesso`,
+        detail: response.message || $localize`Senha redefinida com sucesso! Você pode fazer login agora.`,
         life: 5000,
       });
 
@@ -92,8 +92,8 @@ export class ResetPassword implements OnInit {
     } catch (error: any) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
-        detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        summary: $localize`Erro`,
+        detail: error?.message || $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`,
       });
 
       this.loading = false;

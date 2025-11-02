@@ -4,12 +4,12 @@
       <div class="flex items-center gap-8">
         <a routerLink="/" class="flex items-center gap-3">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-black text-white font-bold">LP</div>
-          <span class="hidden sm:inline font-semibold text-lg">Lovelace Project</span>
+          <span class="hidden sm:inline font-semibold text-lg" i18n>Lovelace Project</span>
         </a>
 
         <div class="hidden lg:flex items-center px-3 py-1 w-96">
           <p-inputgroup>
-            <input pInputText placeholder="Pesquise por um jogo..." />
+            <input pInputText i18n-placeholder placeholder="Pesquise por um jogo..." />
             <p-inputgroup-addon>
               <p-button icon="pi pi-search" severity="secondary" variant="text" />
             </p-inputgroup-addon>
@@ -19,17 +19,17 @@
 
       <nav class="flex items-center justify-between gap-4 grow">
         <div class="flex items-center gap-2 ml-4">
-          <p-button routerLink="/" label="Início" variant="text" [severity]="getButtonSeverity('/')" [rounded]="true" />
-          <p-button routerLink="/wishlist" label="Lista de Desejos" variant="text" [severity]="getButtonSeverity('/wishlist')" [rounded]="true" />
+          <p-button routerLink="/" i18n-label label="Início" variant="text" [severity]="getButtonSeverity('/')" [rounded]="true" />
+          <p-button routerLink="/wishlist" i18n-label label="Lista de Desejos" variant="text" [severity]="getButtonSeverity('/wishlist')" [rounded]="true" />
         </div>
 
         <div class="flex items-center gap-2 ml-4">
           @if (isLoggedIn) {
             <p-menu #menu [model]="items" [popup]="true" />
-            <p-button (click)="menu.toggle($event)" label="Perfil" icon="pi pi-user"></p-button>
+            <p-button (click)="menu.toggle($event)" i18n-label label="Perfil" icon="pi pi-user"></p-button>
           } @else {
-            <p-button routerLink="/login" label="Entrar" icon="pi pi-user"></p-button>
-            <p-button routerLink="/register" label="Registrar" severity="secondary"></p-button>
+            <p-button routerLink="/login" i18n-label label="Entrar" icon="pi pi-user"></p-button>
+            <p-button routerLink="/register" i18n-label label="Registrar" severity="secondary"></p-button>
           }
         </div>
       </nav>

@@ -57,12 +57,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // setup menu items
     this.items = [
       {
-        label: 'Configurações',
+        label: $localize`Configurações`,
         icon: 'pi pi-cog',
         routerLink: '/profile',
       },
       {
-        label: 'Sair',
+        label: $localize`Sair`,
         icon: 'pi pi-sign-out',
         command: () => {
           this.signOut();
@@ -93,8 +93,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     } catch (error: any) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
-        detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+        summary: $localize`Erro`,
+        detail: error?.message || $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`,
       });
     }
   }

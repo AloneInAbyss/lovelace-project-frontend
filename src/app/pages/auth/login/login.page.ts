@@ -67,16 +67,16 @@ export class LoginPage {
       if (error?.errorCode === 'EMAIL_NOT_VERIFIED_PENDING' || error?.errorCode === 'EMAIL_NOT_VERIFIED_SENT') {
         this.messageService.add({
           severity: 'info',
-          summary: 'Info',
+          summary: $localize`Info`,
           detail: error?.message,
         });
       } else {
         this.messageService.add({
           severity: 'error',
-          summary: 'Erro',
+          summary: $localize`Erro`,
           detail:
             error?.message ||
-            'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+            $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`,
         });
       }
 

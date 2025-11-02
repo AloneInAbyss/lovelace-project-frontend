@@ -7,17 +7,17 @@
 		<section class="col-span-9">
       <div class="p-8 p-menu">
         @if (active === 'profile') {
-          <h3 class="text-xl font-semibold mb-8">Mudar senha</h3>
+          <h3 class="text-xl font-semibold mb-8" i18n>Mudar senha</h3>
           <form [formGroup]="changePasswordForm" (ngSubmit)="submitPassword()">
             <div class="mb-8">
               <p-floatlabel>
                 <input pInputText type="password" class="w-full" id="current_password" formControlName="currentPassword" />
-                <label for="current_password">Senha atual</label>
+                <label for="current_password" i18n>Senha atual</label>
               </p-floatlabel>
               @if (f['currentPassword'].invalid && (f['currentPassword'].dirty || f['currentPassword'].touched)) {
                 <div class="text-sm text-red-600 mt-1">
                   @if (f['currentPassword'].errors?.['required']) {
-                    <div>Senha atual é obrigatória.</div>
+                    <div i18n>Senha atual é obrigatória.</div>
                   }
                 </div>
               }
@@ -26,14 +26,14 @@
             <div class="mb-8">
               <p-floatlabel>
                 <input pInputText type="password" class="w-full" id="new_password" formControlName="newPassword" />
-                <label for="new_password">Nova senha</label>
+                <label for="new_password" i18n>Nova senha</label>
               </p-floatlabel>
               @if (f['newPassword'].invalid && (f['newPassword'].dirty || f['newPassword'].touched)) {
                 <div class="text-sm text-red-600 mt-1">
                   @if (f['newPassword'].errors?.['required']) {
-                    <div>Nova senha é obrigatória.</div>
+                    <div i18n>Nova senha é obrigatória.</div>
                   } @if (f['newPassword'].errors?.['minlength'] || f['newPassword'].errors?.['maxlength']) {
-                    <div>Senha precisa ter entre 8 e 64 caracteres.</div>
+                    <div i18n>Senha precisa ter entre 8 e 64 caracteres.</div>
                   }
                 </div>
               }
@@ -42,58 +42,58 @@
             <div class="mb-8">
               <p-floatlabel>
                 <input pInputText type="password" class="w-full" id="confirm_password" formControlName="confirmPassword" />
-                <label for="confirm_password">Confirmar senha</label>
+                <label for="confirm_password" i18n>Confirmar senha</label>
               </p-floatlabel>
               @if (f['confirmPassword'].invalid && (f['confirmPassword'].dirty || f['confirmPassword'].touched)) {
                 <div class="text-sm text-red-600 mt-1">
                   @if (f['confirmPassword'].errors?.['required']) {
-                    <div>Confirmação de senha é obrigatória.</div>
+                    <div i18n>Confirmação de senha é obrigatória.</div>
                   }
                 </div>
               }
               @if (changePasswordForm.errors?.['passwordMismatch'] && (f['confirmPassword'].dirty || f['confirmPassword'].touched)) {
-                <div class="text-sm text-red-600 mt-1">As senhas não coincidem.</div>
+                <div class="text-sm text-red-600 mt-1" i18n>As senhas não coincidem.</div>
               }
             </div>
 
             <div class="mt-4">
-              <button pButton type="submit" label="Mudar senha" [loading]="loading" [disabled]="changePasswordForm.invalid"></button>
+              <button pButton type="submit" i18n-label label="Mudar senha" [loading]="loading" [disabled]="changePasswordForm.invalid"></button>
             </div>
           </form>
         }
 
         @if (active === 'mail') {
-          <h3 class="text-xl font-semibold mb-8">Configurações de email</h3>
+          <h3 class="text-xl font-semibold mb-8" i18n>Configurações de email</h3>
           <form [formGroup]="mailSettingsForm" (ngSubmit)="submitMail()">
             <div class="mb-3">
               <label class="flex items-center gap-2">
                 <input type="checkbox" formControlName="newsletter" />
-                <span>Receber avisos por email</span>
+                <span i18n>Receber avisos por email</span>
               </label>
             </div>
 
             <div class="mt-8">
-              <button pButton type="submit" label="Salvar configurações"></button>
+              <button pButton type="submit" i18n-label label="Salvar configurações"></button>
             </div>
           </form>
         }
 
         @if (active === 'delete') {
-          <h3 class="text-xl font-semibold mb-8">Apagar conta</h3>
-          <p class="text-sm text-gray-600">Esta ação é irreversível. Sua conta e dados serão permanentemente excluídos.</p>
+          <h3 class="text-xl font-semibold mb-8" i18n>Apagar conta</h3>
+          <p class="text-sm text-gray-600" i18n>Esta ação é irreversível. Sua conta e dados serão permanentemente excluídos.</p>
           <div class="mt-8">
-            <button pButton type="button" label="Excluir conta" class="p-button-danger" (click)="confirmDelete()"></button>
+            <button pButton type="button" i18n-label label="Excluir conta" class="p-button-danger" (click)="confirmDelete()"></button>
           </div>
         }
       </div>
 		</section>
 	</div>
 
-	<p-dialog header="Confirmar exclusão" [(visible)]="showDeleteConfirm" [modal]="true" [closable]="true">
-		<p>Tem certeza de que deseja excluir sua conta?</p>
+	<p-dialog i18n-header header="Confirmar exclusão" [(visible)]="showDeleteConfirm" [modal]="true" [closable]="true">
+		<p i18n>Tem certeza de que deseja excluir sua conta?</p>
 		<div class="mt-4 flex gap-2 justify-end">
-			<button pButton label="Cancelar" severity="secondary" (click)="showDeleteConfirm=false"></button>
-			<button pButton label="Sim, excluir" severity="danger" (click)="deleteAccount()"></button>
+			<button pButton i18n-label label="Cancelar" severity="secondary" (click)="showDeleteConfirm=false"></button>
+			<button pButton i18n-label label="Sim, excluir" severity="danger" (click)="deleteAccount()"></button>
 		</div>
 	</p-dialog>
 </div>

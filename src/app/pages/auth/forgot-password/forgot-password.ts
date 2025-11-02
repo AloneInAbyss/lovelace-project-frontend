@@ -58,8 +58,8 @@ export class ForgotPassword {
 
       this.messageService.add({
         severity: 'info',
-        summary: 'Recuperação de Senha',
-        detail: response.message || `Solicitação de recuperação de senha enviada com sucesso. Verifique seu e-mail.`,
+        summary: $localize`Recuperação de Senha`,
+        detail: response.message || $localize`Solicitação de recuperação de senha enviada com sucesso. Verifique seu e-mail.`,
         life: 5000,
       });
 
@@ -68,14 +68,14 @@ export class ForgotPassword {
       if (error?.errorCode === 'PASSWORD_RESET_PENDING') {
         this.messageService.add({
           severity: 'info',
-          summary: 'Info',
+          summary: $localize`Info`,
           detail: error?.message,
         });
       } else {
         this.messageService.add({
           severity: 'error',
-          summary: 'Erro',
-          detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+          summary: $localize`Erro`,
+          detail: error?.message || $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`,
         });
       }
 

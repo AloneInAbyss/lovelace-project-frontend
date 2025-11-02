@@ -5,15 +5,15 @@
         <p-inputgroup-addon>
           <i class="pi pi-envelope"></i>
         </p-inputgroup-addon>
-        <input pInputText formControlName="email" type="email" placeholder="Email" />
+        <input pInputText formControlName="email" type="email" i18n-placeholder placeholder="Email" />
       </p-inputgroup>
 
       @if (f['email'].invalid && (f['email'].dirty || f['email'].touched)) {
         <div class="text-sm text-red-600 mt-1">
           @if (f['email'].errors?.['required']) {
-            <div>Email é obrigatório.</div>
+            <div i18n>Email é obrigatório.</div>
           } @if (f['email'].errors?.['email']) {
-            <div>Email inválido.</div>
+            <div i18n>Email inválido.</div>
           }
         </div>
       }
@@ -24,15 +24,15 @@
         <p-inputgroup-addon>
           <i class="pi pi-user"></i>
         </p-inputgroup-addon>
-        <input pInputText formControlName="username" placeholder="Nome de usuário" />
+        <input pInputText formControlName="username" i18n-placeholder placeholder="Nome de usuário" />
       </p-inputgroup>
 
       @if (f['username'].invalid && (f['username'].dirty || f['username'].touched)) {
         <div class="text-sm text-red-600 mt-1">
           @if (f['username'].errors?.['required']) {
-            <div>Nome de usuário é obrigatório.</div>
+            <div i18n>Nome de usuário é obrigatório.</div>
           } @if (f['username'].errors?.['minlength'] || f['username'].errors?.['maxlength']) {
-            <div>Nome de usuário precisa ter entre 3 e 24 caracteres.</div>
+            <div i18n>Nome de usuário precisa ter entre 3 e 24 caracteres.</div>
           }
         </div>
       }
@@ -43,15 +43,15 @@
         <p-inputgroup-addon>
           <i class="pi pi-key"></i>
         </p-inputgroup-addon>
-        <input pInputText type="password" formControlName="password" placeholder="Senha" />
+        <input pInputText type="password" formControlName="password" i18n-placeholder placeholder="Senha" />
       </p-inputgroup>
 
       @if (f['password'].invalid && (f['password'].dirty || f['password'].touched)) {
         <div class="text-sm text-red-600 mt-1">
           @if (f['password'].errors?.['required']) {
-            <div>Senha é obrigatória.</div>
+            <div i18n>Senha é obrigatória.</div>
           } @if (f['password'].errors?.['minlength'] || f['password'].errors?.['maxlength']) {
-            <div>Senha precisa ter entre 8 e 64 caracteres.</div>
+            <div i18n>Senha precisa ter entre 8 e 64 caracteres.</div>
           }
         </div>
       }
@@ -62,23 +62,23 @@
         <p-inputgroup-addon>
           <i class="pi pi-key"></i>
         </p-inputgroup-addon>
-        <input pInputText type="password" formControlName="passwordConfirm" placeholder="Confirmar senha" />
+        <input pInputText type="password" formControlName="passwordConfirm" i18n-placeholder placeholder="Confirmar senha" />
       </p-inputgroup>
 
       @if (registerForm.errors?.['passwordMismatch'] && (f['passwordConfirm'].dirty || f['passwordConfirm'].touched)) {
-        <div class="text-sm text-red-600 mt-1">As senhas não coincidem.</div>
+        <div class="text-sm text-red-600 mt-1" i18n>As senhas não coincidem.</div>
       }
     </div>
 
     <div class="flex flex-col gap-3">
-      <button pButton type="submit" class="p-button p-component p-button-raised w-full" [disabled]="registerForm.invalid" [loading]="loading">
+      <button pButton type="submit" class="p-button p-component p-button-raised w-full" [disabled]="registerForm.invalid" [loading]="loading" i18n>
         Registrar
       </button>
     </div>
   </form>
 
   <div class="mt-6 text-center text-sm text-slate-600">
-    <span>Já tem conta?</span>
-    <p-button link routerLink="/login" label="Entrar" size="small" />
+    <span i18n>Já tem conta?</span>
+    <p-button link routerLink="/login" i18n-label label="Entrar" size="small" />
   </div>
 </app-header>

@@ -74,18 +74,18 @@ export class RegisterPage {
 
       this.messageService.add({
         severity: 'info',
-        summary: 'Registro',
-        detail: response.message || 'Registro bem-sucedido! Verifique seu email para o link de verificação.',
+        summary: $localize`Registro`,
+        detail: response.message || $localize`Registro bem-sucedido! Verifique seu email para o link de verificação.`,
         life: 15000,
       });
 
       this.router.navigate(['/login']);
     } catch (error: any) {
-      const errorMessage = error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.';
+      const errorMessage = error?.message || $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`;
 
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
+        summary: $localize`Erro`,
         detail: errorMessage,
       });
 

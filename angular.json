@@ -88,11 +88,11 @@
         }
       },
       "i18n": {
-        "sourceLocale": "en-US",
+        "sourceLocale": "pt-BR",
         "locales": {
-          "pt": {
-            "translation": "src/locale/messages.pt.xlf",
-            "baseHref": "/pt/"
+          "en": {
+            "translation": "src/locale/messages.en.xlf",
+            "baseHref": "/en/"
           }
         }
       }

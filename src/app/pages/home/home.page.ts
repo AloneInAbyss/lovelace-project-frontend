@@ -126,8 +126,8 @@ export class HomePage implements OnInit, OnDestroy {
       if (!token) {
         this.messageService.add({
           severity: 'error',
-          summary: 'Erro',
-          detail: 'Token de verificação não fornecido.',
+          summary: $localize`Erro`,
+          detail: $localize`Token de verificação não fornecido.`,
         });
 
         return;
@@ -138,16 +138,16 @@ export class HomePage implements OnInit, OnDestroy {
 
         this.messageService.add({
           severity: 'success',
-          summary: 'Sucesso',
-          detail: response.message || 'Email verificado com sucesso! Você pode fazer login agora.'
+          summary: $localize`Sucesso`,
+          detail: response.message || $localize`Email verificado com sucesso! Você pode fazer login agora.`
         });
 
         this.router.navigate(['/login']);
       } catch (error: any) {
         this.messageService.add({
           severity: 'error',
-          summary: 'Erro',
-          detail: error?.message || 'Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.',
+          summary: $localize`Erro`,
+          detail: error?.message || $localize`Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.`,
         });
 
         this.router.navigate(['/']);
