@@ -19,64 +19,8 @@ import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
-
-interface PriceSet {
-  new?: number | null;
-  used?: number | null;
-  auction?: number | null;
-}
-
-interface BoardGame {
-  id: string;
-  name: string;
-  color: string; // used for placeholder image background
-  prices: PriceSet;
-}
-
-const mockedGameData: BoardGame[] = [
-  {
-    id: 'azul',
-    name: 'Azul',
-    color: 'linear-gradient(135deg,#F59E0B,#F97316)',
-    prices: { new: 39.99, used: 29.5, auction: 15 },
-  },
-  {
-    id: 'ticket-to-ride',
-    name: 'Ticket to Ride',
-    color: 'linear-gradient(135deg,#06B6D4,#0EA5A0)',
-    prices: { new: 44.99, used: 34.0, auction: 22 },
-  },
-  {
-    id: 'catan',
-    name: 'Catan',
-    color: 'linear-gradient(135deg,#EF4444,#F43F5E)',
-    prices: { new: 49.99, used: 37.5, auction: null },
-  },
-  {
-    id: 'wingspan',
-    name: 'Wingspan',
-    color: 'linear-gradient(135deg,#7C3AED,#A78BFA)',
-    prices: { used: 45.0, auction: 30 },
-  },
-  {
-    id: 'gloomhaven',
-    name: 'Gloomhaven',
-    color: 'linear-gradient(135deg,#111827,#374151)',
-    prices: { new: 119.99, used: 89.0, auction: 65 },
-  },
-  {
-    id: 'pandemic',
-    name: 'Pandemic',
-    color: 'linear-gradient(135deg,#10B981,#059669)',
-    prices: { new: null, used: null, auction: null },
-  },
-  {
-    id: 'carcassonne',
-    name: 'Carcassonne',
-    color: 'linear-gradient(135deg,#FB7185,#F43F5E)',
-    prices: { auction: 9 },
-  },
-];
+import { GameService } from '../../services/game.service';
+import { BoardGame } from '../../models/game.model';
 
 @Component({
   selector: 'app-home',
@@ -109,7 +53,8 @@ export class HomePage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private messageService: MessageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private gameService: GameService
   ) {
     this.setupSearch();
   }
@@ -188,7 +133,7 @@ export class HomePage implements OnInit, OnDestroy {
           this.scheduleDetectChanges();
 
           // ensure loading is cleared when inner observable finishes/errors/is canceled
-          return this.mockSearch(q).pipe(finalize(() => (this.loading = false)));
+          return this.search(q).pipe(finalize(() => (this.loading = false)));
         }),
         takeUntil(this.destroy$)
       )
@@ -207,11 +152,20 @@ export class HomePage implements OnInit, OnDestroy {
       });
   }
 
-  private mockSearch(q: string): Observable<BoardGame[]> {
-    const normalized = q.toLowerCase();
-    return of(
-      mockedGameData.filter((g) => g.name.toLowerCase().includes(normalized)).slice(0, 5)
-    ).pipe(delay(1000));
+  private search(q: string): Observable<BoardGame[]> {
+    // Use the real GameService to search games
+    return new Observable<BoardGame[]>((observer) => {
+      this.gameService
+        .searchGames(q, 0, 5) // page 0, size 5
+        .then((response) => {
+          observer.next(response.content);
+          observer.complete();
+        })
+        .catch((error) => {
+          console.error('Error searching games:', error);
+          observer.error(error);
+        });
+    });
   }
 
   navigateToGame(g: BoardGame) {
@@ -241,5 +195,37 @@ export class HomePage implements OnInit, OnDestroy {
     const parts = name.split(' ').filter(Boolean);
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
+
+  /**
+   * Generate a random gradient background color
+   * Uses a seeded approach based on the game ID to ensure consistency
+   */
+  getRandomColor(gameId: string): string {
+    // Define color palette for gradients
+    const colors = [
+      ['#F59E0B', '#F97316'], // orange
+      ['#06B6D4', '#0EA5A0'], // cyan
+      ['#EF4444', '#F43F5E'], // red/pink
+      ['#7C3AED', '#A78BFA'], // purple
+      ['#111827', '#374151'], // gray/dark
+      ['#10B981', '#059669'], // green
+      ['#FB7185', '#F43F5E'], // pink
+      ['#3B82F6', '#2563EB'], // blue
+      ['#F97316', '#FB923C'], // orange/light
+      ['#8B5CF6', '#7C3AED'], // violet
+    ];
+
+    // Simple hash function to convert gameId to a number
+    let hash = 0;
+    for (let i = 0; i < gameId.length; i++) {
+      hash = gameId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // Use hash to pick a color pair consistently
+    const index = Math.abs(hash) % colors.length;
+    const [color1, color2] = colors[index];
+
+    return `linear-gradient(135deg, ${color1}, ${color2})`;
   }
 }
