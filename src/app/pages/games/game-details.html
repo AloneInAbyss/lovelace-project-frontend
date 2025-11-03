@@ -38,7 +38,31 @@
           </div>
 
           <div class="mt-4">
-            <p-button i18n-label label="Adicionar na lista" severity="info" icon="pi pi-plus" (click)="addToWishlist()" />
+            @if (checkingWishlist) {
+              <p-button 
+                i18n-label 
+                label="Verificando..." 
+                severity="secondary" 
+                icon="pi pi-spin pi-spinner" 
+                [disabled]="true" 
+              />
+            } @else if (isInWishlist) {
+              <p-button 
+                i18n-label 
+                label="Remover da lista" 
+                severity="danger" 
+                icon="pi pi-heart-fill" 
+                (click)="toggleWishlist()" 
+              />
+            } @else {
+              <p-button 
+                i18n-label 
+                label="Adicionar na lista" 
+                severity="info" 
+                icon="pi pi-heart" 
+                (click)="toggleWishlist()" 
+              />
+            }
           </div>
         </div>
       </div>

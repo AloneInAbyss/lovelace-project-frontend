@@ -7,8 +7,10 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { SplitterModule } from 'primeng/splitter';
+import { MessageService } from 'primeng/api';
 import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/wishlist.service';
 import { GameDetails as GameDetailsModel } from '../../models/game.model';
 
 interface Listing {
@@ -39,6 +41,8 @@ export class GameDetails implements OnInit {
   gameDetails: GameDetailsModel | null = null;
   loading = true;
   error: string | null = null;
+  isInWishlist = false;
+  checkingWishlist = true;
 
   selectedConditions: string[] = []; // e.g. ['new','used','auction']
 
@@ -51,6 +55,8 @@ export class GameDetails implements OnInit {
     private router: Router,
     private gameService: GameService,
     private authService: AuthService,
+    private wishlistService: WishlistService,
+    private messageService: MessageService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -68,10 +74,40 @@ export class GameDetails implements OnInit {
       this.gameDetails = await this.gameService.getGameDetails(gameId);
       this.loading = false;
       this.cdr.detectChanges();
+      
+      // Check if game is in wishlist (only if user is logged in)
+      await this.checkIfInWishlist();
     } catch (err: any) {
       console.error('Error loading game details:', err);
       this.error = err?.message || 'Failed to load game details';
       this.loading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async checkIfInWishlist(): Promise<void> {
+    // Check if user is logged in
+    let isLoggedIn = false;
+    this.authService.isLoggedIn$.subscribe(loggedIn => {
+      isLoggedIn = loggedIn;
+    }).unsubscribe();
+
+    if (!isLoggedIn) {
+      this.checkingWishlist = false;
+      this.isInWishlist = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    try {
+      // Fetch the wishlist and check if current game is in it
+      const wishlist = await this.wishlistService.getWishlist(0, 100); // Get up to 100 items
+      this.isInWishlist = wishlist.content.some((item: { gameId: string; }) => item.gameId === this.game.id);
+      this.checkingWishlist = false;
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error checking wishlist:', error);
+      this.checkingWishlist = false;
       this.cdr.detectChanges();
     }
   }
@@ -161,7 +197,7 @@ export class GameDetails implements OnInit {
     }
   }
 
-  addToWishlist() {
+  toggleWishlist() {
     // Check if user is logged in
     let isLoggedIn = false;
     this.authService.isLoggedIn$.subscribe(loggedIn => {
@@ -174,8 +210,55 @@ export class GameDetails implements OnInit {
       return;
     }
 
-    // TODO: Implement add to wishlist functionality
-    console.log('Add to wishlist', this.game.id);
+    if (this.isInWishlist) {
+      this.removeFromWishlist();
+    } else {
+      this.addToWishlist();
+    }
+  }
+
+  addToWishlist() {
+    // Add to wishlist
+    this.wishlistService.addToWishlist(this.game.id)
+      .then(() => {
+        this.isInWishlist = true;
+        this.cdr.detectChanges();
+        this.messageService.add({
+          severity: 'success',
+          summary: $localize`Sucesso`,
+          detail: $localize`Jogo adicionado à lista de desejos!`,
+        });
+      })
+      .catch((error) => {
+        console.error('Error adding to wishlist:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: $localize`Erro`,
+          detail: error?.message || $localize`Não foi possível adicionar o jogo à lista de desejos.`,
+        });
+      });
+  }
+
+  removeFromWishlist() {
+    // Remove from wishlist
+    this.wishlistService.removeFromWishlist(this.game.id)
+      .then(() => {
+        this.isInWishlist = false;
+        this.cdr.detectChanges();
+        this.messageService.add({
+          severity: 'success',
+          summary: $localize`Sucesso`,
+          detail: $localize`Jogo removido da lista de desejos!`,
+        });
+      })
+      .catch((error) => {
+        console.error('Error removing from wishlist:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: $localize`Erro`,
+          detail: error?.message || $localize`Não foi possível remover o jogo da lista de desejos.`,
+        });
+      });
   }
 
   /**
