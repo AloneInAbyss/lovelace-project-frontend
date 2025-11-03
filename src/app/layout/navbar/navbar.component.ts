@@ -186,7 +186,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.showDropdown = false;
     this.searchControl.setValue('');
     this.results = [];
-    this.router.navigate(['/game', g.id]);
+    
+    // Navigate to the game page
+    this.router.navigate(['/game', g.id]).then(() => {
+      // Reload the page to ensure fresh data
+      window.location.reload();
+    });
   }
 
   clear() {
