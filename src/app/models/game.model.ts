@@ -19,3 +19,20 @@ export interface GameSearchResponse {
   number: number;
   size: number;
 }
+
+export interface GameDetails {
+  id: string;
+  name: string;
+  yearPublished: number;
+  isExpansion: boolean;
+  lowestPricesByCondition: Record<string, LowestPriceListing>; // key: condition (new, used, auction)
+}
+
+export interface LowestPriceListing {
+  listingId: string;
+  condition: string;
+  price: number;
+  city: string;
+  state: string;
+  listingUrl: string;
+}

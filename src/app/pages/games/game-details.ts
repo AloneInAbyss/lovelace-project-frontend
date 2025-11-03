@@ -1,18 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { SplitterModule } from 'primeng/splitter';
+import { GameService } from '../../services/game.service';
+import { GameDetails as GameDetailsModel } from '../../models/game.model';
 
 interface Listing {
   id: string;
   city: string;
-  condition: 'Novo' | 'Usado' | 'Leilão';
+  state: string;
+  condition: string;
   price: number;
-  endsAt?: string; // for auctions
+  listingUrl: string;
 }
 
 @Component({
@@ -30,80 +34,100 @@ interface Listing {
   templateUrl: './game-details.html',
   styleUrl: './game-details.css',
 })
-export class GameDetails {
-  // Mocked game data
-  game = {
-    id: 'ticket-to-ride',
-    name: 'Ticket to Ride',
-    image: '', // can be data url or empty to show placeholder
-    cheapest: {
-      new: 999.99,
-      used: 499.99,
-      auction: 100.99,
-    },
-  };
+export class GameDetails implements OnInit {
+  gameDetails: GameDetailsModel | null = null;
+  loading = true;
+  error: string | null = null;
 
-  // Mocked listings
-  listings: Listing[] = [
-    { id: '1', city: 'SP - Mogi das Cruzes', condition: 'Novo', price: 999.99 },
-    {
-      id: '2',
-      city: 'SP - Mogi das Cruzes',
-      condition: 'Leilão',
-      price: 999.99,
-      endsAt: 'in 3 days',
-    },
-    { id: '3', city: 'SP - Mogi das Cruzes', condition: 'Usado', price: 499.99 },
-    { id: '4', city: 'RJ - Niterói', condition: 'Usado', price: 450.0 },
-    { id: '5', city: 'BH - Belo Horizonte', condition: 'Novo', price: 1050.0 },
-    { id: '6', city: 'SP - São Paulo', condition: 'Leilão', price: 120.0, endsAt: 'in 1 day' },
-    { id: '7', city: 'PR - Curitiba', condition: 'Usado', price: 420.0 },
-    { id: '8', city: 'RS - Porto Alegre', condition: 'Novo', price: 980.0 },
-    { id: '9', city: 'SP - Campinas', condition: 'Usado', price: 430.0 },
-    { id: '10', city: 'PE - Recife', condition: 'Leilão', price: 150.0, endsAt: 'in 5 days' },
-    { id: '11', city: 'DF - Brasília', condition: 'Novo', price: 995.0 },
-    { id: '12', city: 'SP - Santos', condition: 'Usado', price: 440.0 },
-    { id: '13', city: 'RJ - Rio de Janeiro', condition: 'Novo', price: 1020.0 },
-    { id: '14', city: 'MG - Uberlândia', condition: 'Usado', price: 460.0 },
-    { id: '15', city: 'CE - Fortaleza', condition: 'Leilão', price: 130.0, endsAt: 'in 2 days' },
-    { id: '16', city: 'SP - Ribeirão Preto', condition: 'Novo', price: 1015.0 },
-    { id: '17', city: 'RS - Caxias do Sul', condition: 'Usado', price: 470.0 },
-    { id: '18', city: 'BA - Salvador', condition: 'Leilão', price: 140.0, endsAt: 'in 4 days' },
-    { id: '19', city: 'PR - Londrina', condition: 'Novo', price: 1005.0 },
-    { id: '20', city: 'SP - Sorocaba', condition: 'Usado', price: 480.0 },
-    { id: '21', city: 'RJ - Petrópolis', condition: 'Leilão', price: 160.0, endsAt: 'in 6 days' },
-    { id: '22', city: 'SC - Florianópolis', condition: 'Novo', price: 990.0 },
-    { id: '23', city: 'GO - Goiânia', condition: 'Usado', price: 490.0 },
-    {
-      id: '24',
-      city: 'SP - São José dos Campos',
-      condition: 'Leilão',
-      price: 170.0,
-      endsAt: 'in 7 days',
-    },
-    { id: '25', city: 'RJ - Volta Redonda', condition: 'Novo', price: 985.0 },
-    { id: '26', city: 'MG - Contagem', condition: 'Usado', price: 495.0 },
-    { id: '27', city: 'PE - Olinda', condition: 'Leilão', price: 180.0, endsAt: 'in 8 days' },
-    { id: '28', city: 'SP - Jundiaí', condition: 'Novo', price: 975.0 },
-    { id: '29', city: 'RS - Pelotas', condition: 'Usado', price: 485.0 },
-    {
-      id: '30',
-      city: 'BA - Feira de Santana',
-      condition: 'Leilão',
-      price: 190.0,
-      endsAt: 'in 9 days',
-    },
-  ];
-
-  selectedConditions: string[] = []; // e.g. ['Novo','Usado']
+  selectedConditions: string[] = []; // e.g. ['new','used','auction']
 
   // Pagination state
   rows = 10;
   first = 0;
 
+  constructor(
+    private route: ActivatedRoute,
+    private gameService: GameService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    const gameId = this.route.snapshot.paramMap.get('id');
+    
+    if (!gameId) {
+      this.error = 'Game ID not provided';
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    try {
+      this.gameDetails = await this.gameService.getGameDetails(gameId);
+      this.loading = false;
+      this.cdr.detectChanges();
+    } catch (err: any) {
+      console.error('Error loading game details:', err);
+      this.error = err?.message || 'Failed to load game details';
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  get game() {
+    if (!this.gameDetails) {
+      return {
+        id: '',
+        name: '',
+        cheapest: { new: null, used: null, auction: null }
+      };
+    }
+
+    const lowestPrices = this.gameDetails.lowestPricesByCondition || {};
+    
+    return {
+      id: this.gameDetails.id,
+      name: this.gameDetails.name,
+      yearPublished: this.gameDetails.yearPublished,
+      isExpansion: this.gameDetails.isExpansion,
+      cheapest: {
+        new: lowestPrices['new']?.price || null,
+        used: lowestPrices['used']?.price || null,
+        auction: lowestPrices['auction']?.price || null,
+      }
+    };
+  }
+
+  get listings(): Listing[] {
+    if (!this.gameDetails?.lowestPricesByCondition) return [];
+    
+    const lowestPrices = this.gameDetails.lowestPricesByCondition;
+    const listings: Listing[] = [];
+
+    // Convert the lowestPricesByCondition map to an array of listings
+    Object.entries(lowestPrices).forEach(([condition, listing]) => {
+      if (listing) {
+        listings.push({
+          id: listing.listingId,
+          city: listing.city,
+          state: listing.state,
+          condition: this.formatCondition(condition),
+          price: listing.price,
+          listingUrl: listing.listingUrl
+        });
+      }
+    });
+
+    return listings;
+  }
+
   get filteredListings(): Listing[] {
-    if (!this.selectedConditions || this.selectedConditions.length === 0) return this.listings;
-    return this.listings.filter((l) => this.selectedConditions.includes(l.condition));
+    if (!this.selectedConditions || this.selectedConditions.length === 0) {
+      return this.listings;
+    }
+    
+    return this.listings.filter((l) => 
+      this.selectedConditions.includes(this.normalizeCondition(l.condition))
+    );
   }
 
   get pagedListings(): Listing[] {
@@ -118,19 +142,48 @@ export class GameDetails {
 
   toggleCondition(cond: string) {
     const idx = this.selectedConditions.indexOf(cond);
-    if (idx >= 0) this.selectedConditions.splice(idx, 1);
-    else this.selectedConditions.push(cond);
+    if (idx >= 0) {
+      this.selectedConditions.splice(idx, 1);
+    } else {
+      this.selectedConditions.push(cond);
+    }
     // reset pagination when filters change
     this.first = 0;
   }
 
   removeCondition(cond: string) {
     const idx = this.selectedConditions.indexOf(cond);
-    if (idx >= 0) this.selectedConditions.splice(idx, 1);
+    if (idx >= 0) {
+      this.selectedConditions.splice(idx, 1);
+    }
   }
 
   addToWishlist() {
     // Mock behaviour
     console.log('Add to wishlist', this.game.id);
+  }
+
+  /**
+   * Format condition from API format (new, used, auction) to display format
+   */
+  private formatCondition(condition: string): string {
+    const conditionMap: Record<string, string> = {
+      'new': 'Novo',
+      'used': 'Usado',
+      'auction': 'Leilão'
+    };
+    return conditionMap[condition.toLowerCase()] || condition;
+  }
+
+  /**
+   * Normalize condition from display format back to API format
+   */
+  private normalizeCondition(condition: string): string {
+    const conditionMap: Record<string, string> = {
+      'Novo': 'new',
+      'Usado': 'used',
+      'Leilão': 'auction'
+    };
+    return conditionMap[condition] || condition.toLowerCase();
   }
 }
