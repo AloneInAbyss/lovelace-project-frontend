@@ -7,13 +7,59 @@
           <span class="hidden sm:inline font-semibold text-lg" i18n>Lovelace Project</span>
         </a>
 
-        <div class="hidden lg:flex items-center px-3 py-1 w-96">
+        <div class="hidden lg:flex items-center px-3 py-1 w-96 relative">
           <p-inputgroup>
-            <input pInputText i18n-placeholder placeholder="Pesquise por um jogo..." />
             <p-inputgroup-addon>
-              <p-button icon="pi pi-search" severity="secondary" variant="text" />
+              @if (loading) {
+                <i class="pi pi-spin pi-spinner"></i>
+              } @else {
+                <i class="pi pi-search"></i>
+              }
+            </p-inputgroup-addon>
+            <input 
+              [formControl]="searchControl"
+              (input)="onInput($any($event.target).value)"
+              type="search"
+              pInputText 
+              i18n-placeholder 
+              placeholder="Pesquise por um jogo..." 
+            />
+            <p-inputgroup-addon>
+              <p-button icon="pi pi-times" severity="secondary" variant="text" (onClick)="clear()" />
             </p-inputgroup-addon>
           </p-inputgroup>
+
+          @if (showDropdown) {
+            <div class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-lg shadow-lg z-50 overflow-hidden">
+              <ul>
+                @for (r of results; track r.id) {
+                  <li class="p-3 hover:bg-gray-50 cursor-pointer" (click)="navigateToGame(r)">
+                    <div class="flex items-center gap-3">
+                      <div class="w-12 h-12 rounded-md flex items-center justify-center text-white font-semibold" [style.background]="getRandomColor(r.id)">
+                        {{ initials(r.name) }}
+                      </div>
+                      <div class="flex-1">
+                        <div class="font-medium text-gray-800">{{ r.name }}</div>
+                        <div class="text-sm text-gray-500 mt-1">
+                          @if (r.prices?.new) {
+                            <span i18n>Novo: {{ r.prices?.new | currency }}</span>
+                          }
+                          @if (r.prices?.used) {
+                            <span i18n>{{ r.prices?.new ? ' • ' : '' }}Usado: {{ r.prices?.used | currency }}</span>
+                          }
+                          @if (r.prices?.auction) {
+                            <span i18n>{{ r.prices?.new || r.prices?.used ? ' • ' : '' }}Leilão: {{ r.prices?.auction | currency }}</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                } @empty {
+                  <li class="p-3 text-center text-sm text-gray-500" i18n>Sem resultados</li>
+                }
+              </ul>
+            </div>
+          }
         </div>
       </div>
 
