@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
@@ -8,6 +8,7 @@ import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { SplitterModule } from 'primeng/splitter';
 import { GameService } from '../../services/game.service';
+import { AuthService } from '../../services/auth.service';
 import { GameDetails as GameDetailsModel } from '../../models/game.model';
 
 interface Listing {
@@ -47,7 +48,9 @@ export class GameDetails implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private gameService: GameService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -159,7 +162,19 @@ export class GameDetails implements OnInit {
   }
 
   addToWishlist() {
-    // Mock behaviour
+    // Check if user is logged in
+    let isLoggedIn = false;
+    this.authService.isLoggedIn$.subscribe(loggedIn => {
+      isLoggedIn = loggedIn;
+    }).unsubscribe();
+
+    if (!isLoggedIn) {
+      // Redirect to login page if not logged in
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // TODO: Implement add to wishlist functionality
     console.log('Add to wishlist', this.game.id);
   }
 
