@@ -44,7 +44,7 @@ export class GameDetails implements OnInit {
   isInWishlist = false;
   checkingWishlist = true;
 
-  selectedConditions: string[] = []; // e.g. ['new','used','auction']
+  selectedConditions: string[] = ['new', 'used', 'auction']; // Start with all conditions selected
 
   // Pagination state
   rows = 10;
@@ -161,7 +161,7 @@ export class GameDetails implements OnInit {
 
   get filteredListings(): Listing[] {
     if (!this.selectedConditions || this.selectedConditions.length === 0) {
-      return this.listings;
+      return []; // Return empty array when no filters are selected
     }
     
     return this.listings.filter((l) => 
@@ -180,21 +180,29 @@ export class GameDetails implements OnInit {
   }
 
   toggleCondition(cond: string) {
-    const idx = this.selectedConditions.indexOf(cond);
+    const normalizedCond = this.normalizeCondition(cond);
+    const idx = this.selectedConditions.indexOf(normalizedCond);
     if (idx >= 0) {
       this.selectedConditions.splice(idx, 1);
     } else {
-      this.selectedConditions.push(cond);
+      this.selectedConditions.push(normalizedCond);
     }
     // reset pagination when filters change
     this.first = 0;
   }
 
   removeCondition(cond: string) {
-    const idx = this.selectedConditions.indexOf(cond);
+    const normalizedCond = this.normalizeCondition(cond);
+    const idx = this.selectedConditions.indexOf(normalizedCond);
     if (idx >= 0) {
       this.selectedConditions.splice(idx, 1);
     }
+    this.first = 0;
+  }
+
+  isConditionSelected(cond: string): boolean {
+    const normalizedCond = this.normalizeCondition(cond);
+    return this.selectedConditions.includes(normalizedCond);
   }
 
   toggleWishlist() {

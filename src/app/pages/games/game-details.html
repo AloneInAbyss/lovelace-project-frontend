@@ -69,22 +69,40 @@
 
       @if (listings.length > 0) {
         <div class="flex flex-row items-center gap-2 mb-4">
+          <span class="text-sm font-medium text-gray-700" i18n>Filtros:</span>
 
-          <p-button icon="pi pi-filter" i18n-label label="Filtros" variant="outlined" severity="secondary" />
+          @if (isConditionSelected('Novo')) {
+            <button pButton severity="primary" size="small" (click)="removeCondition('Novo')">
+              <i class="pi pi-times" pButtonIcon></i>
+              <span pButtonLabel class="text-shadow-2xs" i18n>Novo</span>
+            </button>
+          } @else {
+            <button pButton severity="secondary" size="small" variant="outlined" (click)="toggleCondition('Novo')">
+              <span pButtonLabel class="text-shadow-2xs" i18n>Novo</span>
+            </button>
+          }
 
-          <button pButton i18n-label label="Novo" severity="secondary" size="small">
-            <i class="pi pi-times" pButtonIcon></i>
-            <span pButtonLabel class="text-shadow-2xs" i18n>Novo</span>
-          </button>
-          <button pButton i18n-label label="Usado" severity="secondary" size="small">
-            <i class="pi pi-times" pButtonIcon></i>
-            <span pButtonLabel class="text-shadow-2xs" i18n>Usado</span>
-          </button>
-          <button pButton i18n-label label="Leilão" severity="secondary" size="small">
-            <i class="pi pi-times" pButtonIcon></i>
-            <span pButtonLabel class="text-shadow-2xs" i18n>Leilão</span>
-          </button>
+          @if (isConditionSelected('Usado')) {
+            <button pButton severity="primary" size="small" (click)="removeCondition('Usado')">
+              <i class="pi pi-times" pButtonIcon></i>
+              <span pButtonLabel class="text-shadow-2xs" i18n>Usado</span>
+            </button>
+          } @else {
+            <button pButton severity="secondary" size="small" variant="outlined" (click)="toggleCondition('Usado')">
+              <span pButtonLabel class="text-shadow-2xs" i18n>Usado</span>
+            </button>
+          }
 
+          @if (isConditionSelected('Leilão')) {
+            <button pButton severity="primary" size="small" (click)="removeCondition('Leilão')">
+              <i class="pi pi-times" pButtonIcon></i>
+              <span pButtonLabel class="text-shadow-2xs" i18n>Leilão</span>
+            </button>
+          } @else {
+            <button pButton severity="secondary" size="small" variant="outlined" (click)="toggleCondition('Leilão')">
+              <span pButtonLabel class="text-shadow-2xs" i18n>Leilão</span>
+            </button>
+          }
         </div>
 
         <p-table [value]="filteredListings" [paginator]="true" [rows]="rows" [first]="first" (onPage)="onPage($event)">
